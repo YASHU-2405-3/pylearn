@@ -1,9 +1,0 @@
-__pycache__/
-*.pyc
-*.pyo
-venv/
-.env
-*.db
-*.sqlite3
-.DS_Store
-Thumbs.db
