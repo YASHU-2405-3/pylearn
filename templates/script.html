@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% block title %}Script Mode — PyLearn Hub{% endblock %}
+{% block extra_css %}
+<style>
+.editor-top {
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.editor-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: calc(100vh - 180px);
+}
+@media(max-width: 768px) {
+    .editor-container { grid-template-columns: 1fr; height: auto; }
+}
+.panel { display: flex; flex-direction: column; height: 100%; }
+.panel-head {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 10px 18px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #aaa;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-between;
+}
+#script-code {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.45);
+    color: #e0e0e0;
+    border: none;
+    padding: 18px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.95rem;
+    resize: none;
+    outline: none;
+    line-height: 1.6;
+    tab-size: 4;
+}
+.output-pane {
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+#script-output {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 18px;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 0.9rem;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    color: #ccc;
+}
+.out-stdout { color: #3af57b; }
+.out-stderr { color: #ff5050; }
+.out-waiting { color: #777; font-style: italic; }
+.action-dock {
+    background: rgba(255, 255, 255, 0.04);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.btn-run {
+    background: linear-gradient(135deg, #3af57b, #0cad40);
+    border: none;
+    padding: 10px 30px;
+    border-radius: 10px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-run:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(58, 245, 123, 0.3);
+}
+.btn-clean {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ccc;
+    padding: 10px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.btn-clean:hover {
+    background: rgba(255, 80, 80, 0.15);
+    color: #ff5050;
+    border-color: rgba(255, 80, 80, 0.3);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="editor-top">
+    <h5 class="mb-0 fw-bold" style="background: linear-gradient(90deg, #f953c6, #b91d73); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <i class="fas fa-play-circle"></i> Python Script Mode
+    </h5>
+    <span class="ms-auto text-secondary small">Write your full script first, then execute with ▶ Run</span>
+</div>
+
+<div class="editor-container">
+    <div class="panel">
+        <div class="panel-head">
+            <span><i class="fas fa-file-code text-pink me-1"></i> Script Editor</span>
+            <span class="text-secondary">Tab key indentation enabled</span>
+        </div>
+        <textarea id="script-code" spellcheck="false" placeholder="# Write your full Python script here...
+def greet(name):
+    return f'Hello, {name}! Welcome to Python.'
+
+print(greet('Student'))
+print('Numbers 1 to 5:')
+print([x**2 for x in range(1, 6)])">def greet(name):
+    return f"Hello, {name}! Welcome to Python."
+
+print(greet("Student"))
+print("Squares 1 to 5:")
+print([x**2 for x in range(1, 6)])</textarea>
+    </div>
+
+    <div class="panel output-pane">
+        <div class="panel-head">
+            <span><i class="fas fa-terminal text-info me-1"></i> Console Output</span>
+            <span id="script-status" class="text-secondary">Idle</span>
+        </div>
+        <div id="script-output">
+            <span class="out-waiting">Click ▶ Run below to execute your script...</span>
+        </div>
+    </div>
+</div>
+
+<div class="action-dock">
+    <button class="btn-run" id="run-script-btn" onclick="executeScript()">
+        <i class="fas fa-play me-1"></i> Run Script
+    </button>
+    <button class="btn-clean" onclick="clearScript()">
+        <i class="fas fa-trash-alt me-1"></i> Clear
+    </button>
+</div>
+
+<script>
+function executeScript() {
+    const code = document.getElementById('script-code').value.trim();
+    const out = document.getElementById('script-output');
+    const btn = document.getElementById('run-script-btn');
+    const status = document.getElementById('script-status');
+
+    if (!code) {
+        out.innerHTML = '<span class="out-waiting">Write some Python code before running!</span>';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Executing...';
+    status.textContent = 'Running...';
+
+    fetch('/execute', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({code})
+    })
+    .then(r => r.json())
+    .then(res => {
+        status.textContent = 'Finished';
+        let html = '';
+        if (res.out) html += '<span class="out-stdout">' + escapeHtml(res.out) + '</span>';
+        if (res.err) html += '<span class="out-stderr">' + escapeHtml(res.err) + '</span>';
+        if (!res.out && !res.err) html = '<span class="out-waiting">Script finished with no output.</span>';
+        out.innerHTML = html;
+    })
+    .catch(() => {
+        status.textContent = 'Error';
+        out.innerHTML = '<span class="out-stderr">Request failed to connect.</span>';
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-play me-1"></i> Run Script';
+    });
+}
+
+function clearScript() {
+    document.getElementById('script-code').value = '';
+    document.getElementById('script-output').innerHTML = '<span class="out-waiting">Click ▶ Run below to execute your script...</span>';
+    document.getElementById('script-status').textContent = 'Cleared';
+}
+
+function escapeHtml(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+document.getElementById('script-code').addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const ta = e.target, start = ta.selectionStart, end = ta.selectionEnd;
+        ta.value = ta.value.substring(0, start) + '    ' + ta.value.substring(end);
+        ta.selectionStart = ta.selectionEnd = start + 4;
+    }
+});
+</script>
+{% endblock %}

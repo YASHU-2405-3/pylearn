@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% block title %}Quiz Levels — PyLearn Hub{% endblock %}
+{% block extra_css %}
+<style>
+/* status bar */
+.status-bar{background:rgba(255,255,255,.08);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.1);padding:14px 24px;display:none;align-items:center;gap:24px;flex-wrap:wrap;animation:slideDown .5s ease-out}
+.status-bar.visible{display:flex}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.stat{display:flex;align-items:center;gap:8px;font-size:.95rem}
+.stat i{color:#00d2ff}
+.stat .val{font-weight:700;color:#3af57b;font-size:1.1rem}
+
+/* progress bar */
+.progress-wrap{flex:1;min-width:180px}
+.progress-track{background:rgba(255,255,255,.1);border-radius:10px;height:12px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#00d2ff,#3af57b);border-radius:10px;transition:width .5s ease}
+
+/* LEVEL CHOOSER SCREEN */
+.level-screen{max-width:850px;margin:0 auto;padding:40px 24px;text-align:center;animation:fadeIn .6s ease-out}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.level-screen h2{font-size:2rem;margin-bottom:8px;background:linear-gradient(90deg,#00d2ff,#3af57b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.level-screen p{color:#aaa;margin-bottom:28px}
+
+/* section labels */
+.diff-section{margin-bottom:28px}
+.diff-section h5{font-size:.95rem;margin-bottom:12px;text-align:left;display:flex;align-items:center;gap:8px}
+.diff-section h5 span{display:inline-block;padding:4px 14px;border-radius:16px;font-size:.75rem;font-weight:700}
+.diff-section h5 .tag-easy{background:rgba(58,245,123,.2);color:#3af57b}
+.diff-section h5 .tag-medium{background:rgba(255,215,0,.2);color:#ffd700}
+.diff-section h5 .tag-hard{background:rgba(255,80,80,.2);color:#ff5050}
+
+/* level buttons */
+.level-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.level-btn{width:54px;height:54px;border-radius:14px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#aaa;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .25s;position:relative}
+.level-btn:hover{background:linear-gradient(135deg,#00d2ff,#3a7bd5);color:#fff;transform:scale(1.12);border-color:transparent;box-shadow:0 6px 20px rgba(0,210,255,.35)}
+.level-btn.active{background:linear-gradient(135deg,#00d2ff,#3a7bd5);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(0,210,255,.35)}
+.level-btn.completed{background:rgba(58,245,123,.2);color:#3af57b;border-color:rgba(58,245,123,.3)}
+.level-btn.completed::after{content:'✓';position:absolute;top:-6px;right:-4px;font-size:.7rem;background:#3af57b;color:#000;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold}
+
+/* quiz card area */
+.quiz-area{display:none}
+.quiz-area.visible{display:block}
+.quiz-wrap{max-width:700px;margin:30px auto;padding:0 20px;animation:popIn .5s ease-out}
+@keyframes popIn{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.quiz-card{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:32px 28px}
+.quiz-card h4{font-size:1.2rem;margin-bottom:20px;line-height:1.5}
+
+/* choices */
+.choice{display:block;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 18px;margin-bottom:10px;cursor:pointer;transition:all .25s;font-size:1rem}
+.choice:hover{background:rgba(0,210,255,.12);border-color:rgba(0,210,255,.4);transform:translateX(6px)}
+.choice.selected{background:rgba(0,210,255,.2);border-color:#00d2ff;box-shadow:0 0 12px rgba(0,210,255,.2)}
+.choice.correct{background:rgba(58,245,123,.25)!important;border-color:#3af57b!important}
+.choice.wrong{background:rgba(255,80,80,.25)!important;border-color:#ff5050!important}
+
+/* buttons */
+.btn-submit{background:linear-gradient(135deg,#00d2ff,#3a7bd5);border:none;padding:12px 36px;border-radius:12px;font-weight:700;font-size:1rem;color:#fff;cursor:pointer;transition:all .25s;margin-top:12px}
+.btn-submit:hover{transform:scale(1.05);box-shadow:0 6px 24px rgba(0,210,255,.3)}
+.btn-submit:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-back-levels{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:12px 24px;border-radius:12px;color:#aaa;cursor:pointer;transition:all .2s;font-size:.95rem;margin-left:12px}
+.btn-back-levels:hover{background:rgba(0,210,255,.12);color:#00d2ff;border-color:rgba(0,210,255,.3)}
+
+.feedback{margin-top:16px;padding:12px 18px;border-radius:12px;font-weight:600;animation:fadeIn .3s ease-out}
+.feedback.correct{background:rgba(58,245,123,.15);color:#3af57b}
+.feedback.wrong{background:rgba(255,80,80,.15);color:#ff5050}
+
+/* level complete overlay */
+.level-done{text-align:center;padding:40px 20px;animation:popIn .5s ease-out}
+.level-done h3{font-size:1.8rem;margin-bottom:12px}
+.level-done .stars{font-size:2.8rem;margin:16px 0}
+.level-done .score-text{font-size:1.15rem;color:#ccc;margin-bottom:24px}
+.btn-next{background:linear-gradient(135deg,#3af57b,#0cad40);border:none;padding:12px 36px;border-radius:12px;font-weight:700;font-size:1rem;color:#fff;cursor:pointer;transition:all .25s;margin:6px}
+.btn-next:hover{transform:scale(1.05);box-shadow:0 6px 24px rgba(58,245,123,.3)}
+
+.diff-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:.75rem;font-weight:700;margin-left:8px}
+.diff-easy{background:rgba(58,245,123,.2);color:#3af57b}
+.diff-medium{background:rgba(255,215,0,.2);color:#ffd700}
+.diff-hard{background:rgba(255,80,80,.2);color:#ff5050}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Status bar -->
+<div class="status-bar" id="status-bar">
+    <div class="stat"><i class="fas fa-layer-group"></i> Level <span class="val" id="s-level">1</span>
+        <span class="diff-badge diff-easy" id="s-diff">EASY</span>
+    </div>
+    <div class="stat"><i class="fas fa-question-circle"></i> Question <span class="val" id="s-qnum">1</span> / <span class="val" id="s-total">5</span></div>
+    <div class="stat"><i class="fas fa-star"></i> Score <span class="val" id="s-score">0</span></div>
+    <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="s-bar" style="width:0%"></div></div>
+    </div>
+</div>
+
+<!-- Level Selection Screen -->
+<div id="level-screen" class="level-screen">
+    <h2><i class="fas fa-trophy text-warning"></i> Choose Python Level (1 - 30)</h2>
+    <p>Select any level to start! Questions progress from beginner fundamentals to advanced Python logic.</p>
+
+    <div class="diff-section">
+        <h5><span class="tag-easy">EASY</span> Levels 1 – 10 (Syntax, Variables & Types)</h5>
+        <div class="level-grid" id="grid-easy"></div>
+    </div>
+
+    <div class="diff-section">
+        <h5><span class="tag-medium">MEDIUM</span> Levels 11 – 20 (Lists, Loops, Functions & Slicing)</h5>
+        <div class="level-grid" id="grid-medium"></div>
+    </div>
+
+    <div class="diff-section">
+        <h5><span class="tag-hard">HARD</span> Levels 21 – 30 (Decorators, GIL, OOP & Algorithms)</h5>
+        <div class="level-grid" id="grid-hard"></div>
+    </div>
+</div>
+
+<!-- Quiz Play Screen -->
+<div id="quiz-area" class="quiz-area">
+    <div class="quiz-wrap">
+        <div class="quiz-card" id="quiz-card">
+            <h4 id="question">Loading question…</h4>
+            <div id="choices"></div>
+            <button class="btn-submit" id="submit-btn" disabled>Submit Answer</button>
+            <button class="btn-back-levels" onclick="goBackToLevels()"><i class="fas fa-th"></i> Choose Level</button>
+            <div id="feedback" class="feedback" style="display:none"></div>
+        </div>
+
+        <div class="level-done" id="level-done" style="display:none">
+            <h3 id="done-title">🎉 Level Complete!</h3>
+            <div class="stars" id="done-stars"></div>
+            <div class="score-text" id="done-score">You scored 4 / 5</div>
+            <button class="btn-next" id="btn-next-level" onclick="startNextLevel()"><i class="fas fa-arrow-right"></i> Next Level</button>
+            <button class="btn-back-levels" onclick="goBackToLevels()" style="margin-left:0"><i class="fas fa-th"></i> Choose Level</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const QUESTIONS_PER_LEVEL = 5;
+const TOTAL_LEVELS = 30;
+
+let level = 1, qNum = 0, score = 0, selected = null, currentQuiz = null;
+let completedLevels = {};
+
+function buildGrid(containerId, from, to) {
+    const grid = document.getElementById(containerId);
+    for (let i = from; i <= to; i++) {
+        const b = document.createElement('button');
+        b.className = 'level-btn';
+        b.textContent = i;
+        b.dataset.level = i;
+        b.onclick = () => startLevel(i);
+        grid.appendChild(b);
+    }
+}
+buildGrid('grid-easy', 1, 10);
+buildGrid('grid-medium', 11, 20);
+buildGrid('grid-hard', 21, 30);
+
+function updateAllLevelBtns() {
+    document.querySelectorAll('.level-btn').forEach(b => {
+        const lv = parseInt(b.dataset.level);
+        b.classList.remove('active', 'completed');
+        if (completedLevels[lv] !== undefined) b.classList.add('completed');
+        if (lv === level) b.classList.add('active');
+    });
+}
+
+function showLevelScreen() {
+    document.getElementById('level-screen').style.display = 'block';
+    document.getElementById('quiz-area').classList.remove('visible');
+    document.getElementById('status-bar').classList.remove('visible');
+    updateAllLevelBtns();
+}
+
+function showQuizScreen() {
+    document.getElementById('level-screen').style.display = 'none';
+    document.getElementById('quiz-area').classList.add('visible');
+    document.getElementById('status-bar').classList.add('visible');
+    document.getElementById('quiz-card').style.display = 'block';
+    document.getElementById('level-done').style.display = 'none';
+}
+
+function goBackToLevels() {
+    showLevelScreen();
+}
+
+function startLevel(lv) {
+    level = lv;
+    qNum = 0;
+    score = 0;
+    showQuizScreen();
+    updateAllLevelBtns();
+    loadQuiz();
+}
+
+function difficulty(l) { return l <= 10 ? 'EASY' : l <= 20 ? 'MEDIUM' : 'HARD'; }
+function diffClass(l) { return l <= 10 ? 'diff-easy' : l <= 20 ? 'diff-medium' : 'diff-hard'; }
+
+function updateStatus() {
+    document.getElementById('s-level').textContent = level;
+    document.getElementById('s-qnum').textContent = qNum + 1;
+    document.getElementById('s-total').textContent = QUESTIONS_PER_LEVEL;
+    document.getElementById('s-score').textContent = score;
+    const pct = (qNum / QUESTIONS_PER_LEVEL) * 100;
+    document.getElementById('s-bar').style.width = pct + '%';
+    const badge = document.getElementById('s-diff');
+    badge.textContent = difficulty(level);
+    badge.className = 'diff-badge ' + diffClass(level);
+}
+
+function loadQuiz() {
+    selected = null;
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('feedback').style.display = 'none';
+    updateStatus();
+    fetch('/api/quiz/' + level + '/' + qNum)
+        .then(r => r.json())
+        .then(data => {
+            currentQuiz = data;
+            document.getElementById('question').textContent = data.question;
+            const cd = document.getElementById('choices');
+            cd.innerHTML = '';
+            data.choices.forEach(c => {
+                const d = document.createElement('div');
+                d.className = 'choice';
+                d.textContent = c;
+                d.onclick = () => {
+                    document.querySelectorAll('.choice').forEach(x => x.classList.remove('selected'));
+                    d.classList.add('selected');
+                    selected = c;
+                    document.getElementById('submit-btn').disabled = false;
+                };
+                cd.appendChild(d);
+            });
+        });
+}
+
+document.getElementById('submit-btn').onclick = function () {
+    if (!selected) return;
+    const fb = document.getElementById('feedback');
+    const isCorrect = selected === currentQuiz.answer;
+
+    document.querySelectorAll('.choice').forEach(d => {
+        if (d.textContent === currentQuiz.answer) d.classList.add('correct');
+        if (d.classList.contains('selected') && !isCorrect) d.classList.add('wrong');
+        d.onclick = null;
+    });
+    this.disabled = true;
+
+    if (isCorrect) {
+        score++;
+        fb.textContent = '✅ Correct! Well done!';
+        fb.className = 'feedback correct';
+    } else {
+        fb.textContent = '❌ Wrong! Correct answer: ' + currentQuiz.answer;
+        fb.className = 'feedback wrong';
+    }
+    fb.style.display = 'block';
+    document.getElementById('s-score').textContent = score;
+
+    setTimeout(() => {
+        qNum++;
+        if (qNum >= QUESTIONS_PER_LEVEL) {
+            completedLevels[level] = score;
+            showLevelComplete();
+        } else {
+            loadQuiz();
+        }
+    }, 1500);
+};
+
+function showLevelComplete() {
+    document.getElementById('quiz-card').style.display = 'none';
+    const done = document.getElementById('level-done');
+    done.style.display = 'block';
+
+    document.getElementById('done-title').textContent =
+        score === QUESTIONS_PER_LEVEL ? '🎉 Perfect Score!' :
+        score >= 3 ? '🎉 Level Passed!' : '😅 Good Try!';
+
+    let stars = '';
+    const filled = score >= 5 ? 3 : score >= 3 ? 2 : score >= 1 ? 1 : 0;
+    for (let i = 0; i < 3; i++) stars += i < filled ? '⭐' : '☆';
+    document.getElementById('done-stars').textContent = stars;
+    document.getElementById('done-score').textContent = `You scored ${score} / ${QUESTIONS_PER_LEVEL}`;
+
+    const nextBtn = document.getElementById('btn-next-level');
+    if (level >= TOTAL_LEVELS) {
+        nextBtn.textContent = '🏆 All Levels Completed!';
+        nextBtn.disabled = true;
+    } else {
+        nextBtn.innerHTML = `<i class="fas fa-arrow-right"></i> Next Level (${level + 1})`;
+        nextBtn.disabled = false;
+    }
+
+    document.getElementById('s-bar').style.width = '100%';
+    updateAllLevelBtns();
+}
+
+function startNextLevel() {
+    if (level < TOTAL_LEVELS) {
+        startLevel(level + 1);
+    }
+}
+
+showLevelScreen();
+</script>
+{% endblock %}

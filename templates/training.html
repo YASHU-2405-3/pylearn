@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title %}Python Training Course — PyLearn Hub{% endblock %}
+{% block extra_css %}
+<style>
+.lessons{max-width:800px;margin:40px auto;padding:0 24px}
+.lesson{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:20px 24px;margin-bottom:16px;cursor:pointer;transition:all .3s}
+.lesson:hover{background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.3);transform:translateX(6px)}
+.lesson h4{margin:0 0 6px;font-size:1.05rem}
+.lesson h4 .num{display:inline-block;background:linear-gradient(135deg,#ff6b6b,#ee5a24);color:#fff;width:28px;height:28px;border-radius:50%;text-align:center;line-height:28px;font-size:.8rem;margin-right:10px}
+.lesson p{margin:0;color:#aaa;font-size:.88rem}
+.lesson-content{display:none;margin-top:14px;padding:14px;background:rgba(0,0,0,.25);border-radius:10px;font-size:.9rem;line-height:1.7;color:#ddd}
+.lesson-content code{background:rgba(255,255,255,.1);padding:2px 6px;border-radius:4px;color:#3af57b;font-family:'Cascadia Code','Consolas',monospace;font-size:.85rem}
+.lesson.open .lesson-content{display:block}
+.lesson.open{border-color:rgba(255,107,107,.4)}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container text-center pt-4">
+    <h2 class="fw-bold" style="background: linear-gradient(90deg, #ff6b6b, #ee5a24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <i class="fas fa-graduation-cap"></i> Structured Python Lessons
+    </h2>
+    <p class="text-secondary">Click on any module to unfold code examples and tutorials!</p>
+</div>
+
+<div class="lessons">
+    <div class="lesson" onclick="this.classList.toggle('open')">
+        <h4><span class="num">1</span> Introduction to Python</h4>
+        <p>What is Python, why learn it, and how to get started.</p>
+        <div class="lesson-content">
+            Python is a high-level interpreted programming language renowned for clear syntax.<br><br>
+            <strong>Hello World:</strong><br>
+            <code>print("Hello, World!")</code><br><br>
+            Save as <code>main.py</code> and execute using <code>python main.py</code>.
+        </div>
+    </div>
+
+    <div class="lesson" onclick="this.classList.toggle('open')">
+        <h4><span class="num">2</span> Variables & Data Types</h4>
+        <p>Integers, floats, strings, booleans, and conversions.</p>
+        <div class="lesson-content">
+            Store values dynamically:<br>
+            <code>name = "Alex"</code> → str<br>
+            <code>age = 21</code> → int<br>
+            <code>score = 98.5</code> → float<br>
+            <code>passed = True</code> → bool<br><br>
+            Type conversion: <code>int("42")</code>, <code>str(100)</code>, <code>float("3.14")</code>
+        </div>
+    </div>
+
+    <div class="lesson" onclick="this.classList.toggle('open')">
+        <h4><span class="num">3</span> Operators & Expressions</h4>
+        <p>Arithmetic, comparison, and boolean logic.</p>
+        <div class="lesson-content">
+            Arithmetic: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>//</code> (floor), <code>%</code> (mod), <code>**</code> (power)<br>
+            Comparison: <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code><br>
+            Logic: <code>and</code>, <code>or</code>, <code>not</code>
+        </div>
+    </div>
+
+    <div class="lesson" onclick="this.classList.toggle('open')">
+        <h4><span class="num">4</span> Control Flow (If / Elif / Else)</h4>
+        <p>Conditional decision making in code.</p>
+        <div class="lesson-content">
+            <code>if score &gt;= 90:</code><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<code>print("Grade A")</code><br>
+            <code>elif score &gt;= 75:</code><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<code>print("Grade B")</code><br>
+            <code>else:</code><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<code>print("Keep practicing!")</code>
+        </div>
+    </div>
+
+    <div class="lesson" onclick="this.classList.toggle('open')">
+        <h4><span class="num">5</span> Loops (For & While)</h4>
+        <p>Iterations, ranges, break, and continue.</p>
+        <div class="lesson-content">
+            <strong>For Loop:</strong><br>
+            <code>for i in range(5):</code><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<code>print(f"Index: {i}")</code><br><br>
+            <strong>While Loop:</strong><br>
+            <code>while count &gt; 0:</code><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<code>count -= 1</code>
+        </div>
+    </div>
+
+    <div class="lesson" onclick="this.classList.toggle('open')">
+        <h4><span class="num">6</span> Functions & Scope</h4>
+        <p>Modular code with arguments and return values.</p>
+        <div class="lesson-content">
+            <code>def add_numbers(a, b=10):</code><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<code>return a + b</code><br><br>
+            <code>result = add_numbers(5)</code> # outputs 15
+        </div>
+    </div>
+
+    <div class="lesson" onclick="this.classList.toggle('open')">
+        <h4><span class="num">7</span> Lists & Tuples</h4>
+        <p>Ordered collections and slicing.</p>
+        <div class="lesson-content">
+            <code>fruits = ["Apple", "Banana", "Cherry"]</code><br>
+            <code>fruits.append("Mango")</code><br>
+            <code>fruits[1:3]</code> # ['Banana', 'Cherry']<br>
+            Tuples are immutable: <code>coords = (10, 20)</code>
+        </div>
+    </div>
+
+    <div class="lesson" onclick="this.classList.toggle('open')">
+        <h4><span class="num">8</span> Dictionaries & Sets</h4>
+        <p>Key-value mappings and distinct element sets.</p>
+        <div class="lesson-content">
+            <code>student = {"name": "Yash", "grade": "A"}</code><br>
+            <code>print(student["name"])</code><br><br>
+            <code>unique_items = set([1, 2, 2, 3])</code> # {1, 2, 3}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}Live Python Editor — PyLearn Hub{% endblock %}
+{% block extra_css %}
+<style>
+.editor-top {
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.badge-live {
+    background: #3af57b;
+    color: #000;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.editor-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: calc(100vh - 120px);
+}
+@media(max-width: 768px) {
+    .editor-container { grid-template-columns: 1fr; height: auto; }
+}
+.panel { display: flex; flex-direction: column; height: 100%; }
+.panel-head {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 10px 18px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #aaa;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-between;
+}
+#live-code {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.45);
+    color: #e0e0e0;
+    border: none;
+    padding: 18px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.95rem;
+    resize: none;
+    outline: none;
+    line-height: 1.6;
+    tab-size: 4;
+}
+.output-pane {
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+#live-output {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 18px;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 0.9rem;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    color: #ccc;
+}
+.out-stdout { color: #3af57b; }
+.out-stderr { color: #ff5050; }
+.out-waiting { color: #777; font-style: italic; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="editor-top">
+    <h5 class="mb-0 fw-bold" style="background: linear-gradient(90deg, #00d2ff, #3a7bd5); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <i class="fas fa-bolt"></i> Live Real-Time Python Editor
+    </h5>
+    <span class="badge-live">LIVE PREVIEW</span>
+    <span class="ms-auto text-secondary small">Automatically executes 500ms after typing stops</span>
+</div>
+
+<div class="editor-container">
+    <div class="panel">
+        <div class="panel-head">
+            <span><i class="fas fa-code text-info me-1"></i> Python Code</span>
+            <span class="text-secondary">Tab key indentation enabled</span>
+        </div>
+        <textarea id="live-code" spellcheck="false" placeholder="# Type Python code here...
+print('Hello from Live Python!')
+for i in range(1, 6):
+    print(f'Counting: {i}')">print("Hello from Live Python!")
+for i in range(1, 6):
+    print(f"Counting: {i}")</textarea>
+    </div>
+
+    <div class="panel output-pane">
+        <div class="panel-head">
+            <span><i class="fas fa-terminal text-success me-1"></i> Live Terminal Output</span>
+            <span id="exec-status" class="text-secondary">Ready</span>
+        </div>
+        <div id="live-output">
+            <span class="out-waiting">Execution output will appear here automatically...</span>
+        </div>
+    </div>
+</div>
+
+<script>
+let liveTimer = null;
+const codeInput = document.getElementById('live-code');
+const outputPane = document.getElementById('live-output');
+const statusText = document.getElementById('exec-status');
+
+function runLiveCode() {
+    const code = codeInput.value.trim();
+    if (!code) {
+        outputPane.innerHTML = '<span class="out-waiting">Write some Python code to see output...</span>';
+        statusText.textContent = 'Empty';
+        return;
+    }
+    statusText.textContent = 'Running...';
+    fetch('/execute', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({code})
+    })
+    .then(r => r.json())
+    .then(res => {
+        statusText.textContent = 'Updated';
+        let html = '';
+        if (res.out) html += '<span class="out-stdout">' + escapeHtml(res.out) + '</span>';
+        if (res.err) html += '<span class="out-stderr">' + escapeHtml(res.err) + '</span>';
+        if (!res.out && !res.err) html = '<span class="out-waiting">Program finished with 0 output.</span>';
+        outputPane.innerHTML = html;
+    })
+    .catch(() => {
+        statusText.textContent = 'Error';
+        outputPane.innerHTML = '<span class="out-stderr">Execution request failed.</span>';
+    });
+}
+
+function escapeHtml(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+codeInput.addEventListener('input', () => {
+    clearTimeout(liveTimer);
+    statusText.textContent = 'Typing...';
+    liveTimer = setTimeout(runLiveCode, 500);
+});
+
+codeInput.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = codeInput.selectionStart, end = codeInput.selectionEnd;
+        codeInput.value = codeInput.value.substring(0, start) + '    ' + codeInput.value.substring(end);
+        codeInput.selectionStart = codeInput.selectionEnd = start + 4;
+        clearTimeout(liveTimer);
+        liveTimer = setTimeout(runLiveCode, 500);
+    }
+});
+
+// Run once on load
+setTimeout(runLiveCode, 300);
+</script>
+{% endblock %}
