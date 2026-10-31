@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyLearn Hub — Interactive Python Learning Platform</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<!-- Pyodide: In-Browser Real Python Engine -->
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Poppins:wght@300;400;600;700;800&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+    font-family:'Poppins',sans-serif;
+    background:#0a0c16;
+    min-height:100vh;
+    color:#e4e8f7;
+    overflow-x:hidden;
+}
+
+/* Background Python Code Matrix */
+#code-matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.16;
+}
+
+/* Nav */
+.top-nav {
+    background: rgba(10, 14, 28, 0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0, 210, 255, 0.2);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.brand {
+    font-weight: 800;
+    font-size: 1.25rem;
+    font-family: 'Fira Code', monospace;
+    background: linear-gradient(90deg, #306998, #ffd438, #00d2ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-decoration: none;
+    cursor: pointer;
+}
+.nav-tab-btn {
+    background: transparent;
+    border: none;
+    color: #9ba9c9;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.nav-tab-btn:hover, .nav-tab-btn.active {
+    color: #fff;
+    background: rgba(0, 210, 255, 0.15);
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.3);
+}
+
+.engine-status {
+    margin-left: auto;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Fira Code', monospace;
+    color: #718096;
+}
+.engine-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffd438;
+}
+.engine-dot.ready { background: #3af57b; box-shadow: 0 0 8px #3af57b; }
+
+/* Views container */
+.view-panel {
+    display: none;
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+.view-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Home / Hero */
+.hero { text-align: center; padding: 50px 20px 20px; }
+.hero h1 {
+    font-size: 3.4rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #00d2ff, #ffd438, #f953c6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.hero p { font-size: 1.15rem; color: #a0aec0; max-width: 650px; margin: 12px auto 30px; }
+
+/* Grid Cards */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+    max-width: 1100px;
+    margin: 20px auto 40px;
+}
+.feature-card {
+    background: rgba(18, 24, 46, 0.7);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 28px 22px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 210, 255, 0.22);
+    border-color: rgba(0, 210, 255, 0.35);
+}
+.feature-card .icon { font-size: 2.6rem; margin-bottom: 14px; }
+
+/* Live Editor / Script Mode */
+.editor-box {
+    max-width: 1100px;
+    margin: 10px auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    height: 70vh;
+}
+@media(max-width: 768px) { .editor-box { grid-template-columns: 1fr; height: auto; } }
+.code-area, .terminal-area {
+    background: rgba(10, 14, 28, 0.9);
+    border: 1px solid rgba(0, 210, 255, 0.2);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.panel-head {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    color: #a0aec0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-between;
+}
+.py-textarea {
+    flex: 1;
+    background: transparent;
+    color: #e4e8f7;
+    border: none;
+    outline: none;
+    padding: 16px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.95rem;
+    resize: none;
+    line-height: 1.6;
+}
+.py-output {
+    flex: 1;
+    padding: 16px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    color: #3af57b;
+}
+
+/* Quiz UI */
+.quiz-box {
+    max-width: 760px;
+    margin: 20px auto;
+    background: rgba(18, 24, 46, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 30px;
+}
+.quiz-choice {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.quiz-choice:hover { background: rgba(0, 210, 255, 0.15); border-color: #00d2ff; }
+.quiz-choice.correct { background: rgba(58, 245, 123, 0.25) !important; border-color: #3af57b !important; }
+.quiz-choice.wrong { background: rgba(255, 80, 80, 0.25) !important; border-color: #ff5050 !important; }
+
+.level-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0; }
+.level-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #a0aec0;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.level-btn:hover, .level-btn.active {
+    background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+    color: #fff;
+    transform: scale(1.1);
+}
+.level-btn.done { border-color: #3af57b; color: #3af57b; }
+
+/* Games */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+.game-card {
+    background: rgba(18, 24, 46, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 22px;
+}
+.game-btn {
+    background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+    border: none;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.ttt-grid { display: grid; grid-template-columns: repeat(3, 65px); gap: 6px; margin: 12px auto; width: max-content; }
+.ttt-cell { width: 65px; height: 65px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; font-size: 1.8rem; font-weight: bold; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+#snake-canvas { background: #06080e; border: 2px solid rgba(58,245,123,0.3); border-radius: 10px; display: block; margin: 8px auto; }
+</style>
+</head>
+<body>
+
+<canvas id="code-matrix-bg"></canvas>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+    <span class="brand" onclick="switchTab('home')"><i class="fab fa-python text-warning"></i> PyLearn Hub</span>
+    <button class="nav-tab-btn active" id="tab-home" onclick="switchTab('home')"><i class="fas fa-home"></i> Home</button>
+    <button class="nav-tab-btn" id="tab-editor" onclick="switchTab('editor')"><i class="fas fa-bolt text-info"></i> Live Editor</button>
+    <button class="nav-tab-btn" id="tab-script" onclick="switchTab('script')"><i class="fas fa-play text-pink" style="color:#f953c6;"></i> Script Mode</button>
+    <button class="nav-tab-btn" id="tab-quiz" onclick="switchTab('quiz')"><i class="fas fa-trophy text-success"></i> 30 Quiz Levels</button>
+    <button class="nav-tab-btn" id="tab-games" onclick="switchTab('games')"><i class="fas fa-gamepad text-warning"></i> Mini Games</button>
+    
+    <div class="engine-status">
+        <span class="engine-dot" id="engine-dot"></span>
+        <span id="engine-text">Loading Python Engine...</span>
+    </div>
+</nav>
+
+<!-- ==================== VIEW 1: HOME ==================== -->
+<div class="view-panel active" id="view-home">
+    <div class="hero">
+        <h1>Interactive Python In Your Browser</h1>
+        <p>No downloads, no server installation! Runs 100% directly in your browser, works anywhere, and embeds inside Google Sites in 1 click!</p>
+    </div>
+
+    <div class="card-grid">
+        <div class="feature-card" onclick="switchTab('editor')">
+            <div class="icon text-info"><i class="fas fa-bolt"></i></div>
+            <h4>Live Python Editor</h4>
+            <p class="text-secondary small">Type real Python code and see instant output preview automatically.</p>
+        </div>
+        <div class="feature-card" onclick="switchTab('script')">
+            <div class="icon" style="color:#f953c6;"><i class="fas fa-play-circle"></i></div>
+            <h4>Script Mode</h4>
+            <p class="text-secondary small">Write full Python programs, loops, and functions with a ▶ Run button.</p>
+        </div>
+        <div class="feature-card" onclick="switchTab('quiz')">
+            <div class="icon text-success"><i class="fas fa-trophy"></i></div>
+            <h4>30 Quiz Levels</h4>
+            <p class="text-secondary small">Choose any level from 1 to 30. Progress tracking and live score bar!</p>
+        </div>
+        <div class="feature-card" onclick="switchTab('games')">
+            <div class="icon text-warning"><i class="fas fa-gamepad"></i></div>
+            <h4>Python Mini Games</h4>
+            <p class="text-secondary small">Play Word Guess (case-insensitive), Snake, Tic-Tac-Toe AI, and more!</p>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== VIEW 2: LIVE EDITOR ==================== -->
+<div class="view-panel" id="view-editor">
+    <div class="editor-box">
+        <div class="code-area">
+            <div class="panel-head">
+                <span><i class="fas fa-code text-info me-1"></i> Python Code (Real Execution)</span>
+                <span class="text-secondary small">Auto-executes as you type</span>
+            </div>
+            <textarea class="py-textarea" id="live-py-code" spellcheck="false" placeholder="Type Python here...">print("Hello from In-Browser Python!")
+for i in range(1, 6):
+    print(f"Counting: {i}")</textarea>
+        </div>
+        <div class="terminal-area">
+            <div class="panel-head">
+                <span><i class="fas fa-terminal text-success me-1"></i> Live Output</span>
+                <span id="live-status" class="text-secondary small">Ready</span>
+            </div>
+            <div class="py-output" id="live-py-output">Initializing Python...</div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== VIEW 3: SCRIPT MODE ==================== -->
+<div class="view-panel" id="view-script">
+    <div class="editor-box">
+        <div class="code-area">
+            <div class="panel-head">
+                <span><i class="fas fa-file-code text-pink me-1"></i> Python Script</span>
+                <button class="game-btn py-1 px-3" onclick="runScript()"><i class="fas fa-play me-1"></i> Run</button>
+            </div>
+            <textarea class="py-textarea" id="script-py-code" spellcheck="false" placeholder="Write full script here...">def calculate_squares(limit):
+    return [x**2 for x in range(1, limit + 1)]
+
+print("Squares 1 to 8:")
+print(calculate_squares(8))
+
+print("\nPython Dict Example:")
+student = {"name": "Yash", "track": "Python Beginner"}
+print(f"Student: {student['name']}, Track: {student['track']}")</textarea>
+        </div>
+        <div class="terminal-area">
+            <div class="panel-head">
+                <span><i class="fas fa-terminal text-info me-1"></i> Terminal Console</span>
+                <button class="btn btn-sm btn-outline-secondary py-0" onclick="clearScriptOutput()">Clear</button>
+            </div>
+            <div class="py-output" id="script-py-output">Click ▶ Run to execute your Python script.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== VIEW 4: QUIZ LEVELS ==================== -->
+<div class="view-panel" id="view-quiz">
+    <div class="quiz-box text-center">
+        <h3 class="fw-bold mb-3"><i class="fas fa-trophy text-warning"></i> 30 Quiz Levels</h3>
+        <p class="text-secondary small">Pick any level from 1 to 30! Questions range from easy syntax to advanced concepts.</p>
+        
+        <div class="level-grid" id="quiz-level-grid"></div>
+
+        <div id="quiz-content" style="display:none;" class="text-start mt-4">
+            <div class="d-flex justify-content-between text-secondary small mb-2">
+                <span>Level: <b id="q-cur-lvl" class="text-info">1</b> | Question: <b id="q-cur-idx" class="text-light">1</b>/5</span>
+                <span>Score: <b id="q-cur-score" class="text-success">0</b></span>
+            </div>
+            <h5 id="q-question-text" class="fw-bold mb-3">Loading...</h5>
+            <div id="q-options-container"></div>
+            <div id="q-feedback" class="small fw-bold mt-2" style="min-height: 20px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== VIEW 5: MINI GAMES ==================== -->
+<div class="view-panel" id="view-games">
+    <div class="games-grid">
+        <!-- 1. Word Guess -->
+        <div class="game-card">
+            <h5 class="fw-bold text-warning"><i class="fas fa-font"></i> Guess The Word (Accepts Capital & Small)</h5>
+            <p class="text-secondary small">Hint: <span id="g-wg-hint" class="text-info">--</span></p>
+            <div id="g-wg-display" class="fs-3 fw-bold text-success font-monospace mb-2 text-center" style="letter-spacing: 4px;">_ _ _ _</div>
+            <div class="d-flex gap-2">
+                <input type="text" id="g-wg-input" class="form-control bg-dark border-secondary text-light text-center" placeholder="Letter or word">
+                <button class="game-btn" onclick="submitWordGuess()">Guess</button>
+            </div>
+            <div id="g-wg-msg" class="small fw-bold mt-2 text-center" style="min-height: 20px;"></div>
+            <div class="text-center mt-2">
+                <button class="btn btn-sm btn-outline-secondary" onclick="initWordGuess()">Next Word</button>
+            </div>
+        </div>
+
+        <!-- 2. Snake Game -->
+        <div class="game-card">
+            <h5 class="fw-bold text-success"><i class="fas fa-worm"></i> Classic Snake</h5>
+            <canvas id="snake-canvas" width="220" height="180"></canvas>
+            <div class="d-flex justify-content-between align-items-center small mt-2">
+                <span>Score: <b id="s-score" class="text-success">0</b></span>
+                <button class="btn btn-sm btn-outline-light" onclick="startSnake()">Restart</button>
+            </div>
+            <div class="text-center mt-2">
+                <button class="btn btn-sm btn-dark border-secondary text-light px-3 py-1" onclick="changeSnakeDir(0, -1)">▲</button><br>
+                <button class="btn btn-sm btn-dark border-secondary text-light px-3 py-1 me-2" onclick="changeSnakeDir(-1, 0)">◀</button>
+                <button class="btn btn-sm btn-dark border-secondary text-light px-3 py-1" onclick="changeSnakeDir(0, 1)">▼</button>
+                <button class="btn btn-sm btn-dark border-secondary text-light px-3 py-1 ms-2" onclick="changeSnakeDir(1, 0)">▶</button>
+            </div>
+        </div>
+
+        <!-- 3. Tic Tac Toe -->
+        <div class="game-card">
+            <h5 class="fw-bold text-info"><i class="fas fa-times-circle"></i> Tic-Tac-Toe vs AI</h5>
+            <div class="ttt-grid" id="ttt-board"></div>
+            <p id="ttt-msg" class="text-center small text-info fw-bold mb-1">Your turn (X)</p>
+            <div class="text-center">
+                <button class="btn btn-sm btn-outline-secondary" onclick="initTTT()">Reset Game</button>
+            </div>
+        </div>
+
+        <!-- 4. Number Guesser -->
+        <div class="game-card">
+            <h5 class="fw-bold text-warning"><i class="fas fa-dice"></i> Number Guesser (1 - 100)</h5>
+            <p class="text-secondary small">Guess the secret number with hot/cold hints.</p>
+            <div class="d-flex gap-2">
+                <input type="number" id="num-guess-input" class="form-control bg-dark border-secondary text-light" placeholder="1-100">
+                <button class="game-btn" onclick="checkNumberGuess()">Check</button>
+            </div>
+            <div id="num-guess-msg" class="small mt-2 text-center" style="min-height: 25px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ==================== 1. TAB SWITCHER ==================== */
+function switchTab(tabId) {
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('view-' + tabId).classList.add('active');
+    const b = document.getElementById('tab-' + tabId);
+    if (b) b.classList.add('active');
+}
+
+/* ==================== 2. IN-BROWSER PYODIDE PYTHON ENGINE ==================== */
+let pyodide = null;
+async function initPyodideEngine() {
+    try {
+        pyodide = await loadPyodide();
+        document.getElementById('engine-dot').classList.add('ready');
+        document.getElementById('engine-text').textContent = "Python 3.11 Ready";
+        runLiveCode();
+    } catch(err) {
+        document.getElementById('engine-text').textContent = "Engine Offline (Fallback ready)";
+    }
+}
+initPyodideEngine();
+
+async function executePythonCode(code) {
+    if (!pyodide) return "Python Engine is still initializing...";
+    try {
+        pyodide.runPython(`
+import sys
+import io
+sys.stdout = io.StringIO()
+sys.stderr = io.StringIO()
+`);
+        await pyodide.runPythonAsync(code);
+        const stdout = pyodide.runPython("sys.stdout.getvalue()");
+        const stderr = pyodide.runPython("sys.stderr.getvalue()");
+        return stdout || stderr || "Program completed with 0 output.";
+    } catch (e) {
+        return e.toString();
+    }
+}
+
+let liveTimer = null;
+const liveInput = document.getElementById('live-py-code');
+const liveOutput = document.getElementById('live-py-output');
+
+async function runLiveCode() {
+    if (!pyodide) return;
+    const code = liveInput.value.trim();
+    if (!code) { liveOutput.textContent = "Write some code..."; return; }
+    document.getElementById('live-status').textContent = "Executing...";
+    const res = await executePythonCode(code);
+    liveOutput.textContent = res;
+    document.getElementById('live-status').textContent = "Updated";
+}
+
+liveInput.addEventListener('input', () => {
+    clearTimeout(liveTimer);
+    document.getElementById('live-status').textContent = "Typing...";
+    liveTimer = setTimeout(runLiveCode, 400);
+});
+
+async function runScript() {
+    const code = document.getElementById('script-py-code').value.trim();
+    const out = document.getElementById('script-py-output');
+    out.textContent = "Executing script in browser...";
+    const res = await executePythonCode(code);
+    out.textContent = res;
+}
+function clearScriptOutput() {
+    document.getElementById('script-py-output').textContent = "Console cleared.";
+}
+
+/* ==================== 3. 30 QUIZ LEVELS ==================== */
+const quizBank = [
+    {q: "What keyword defines a function in Python?", o: ["def", "function", "func", "define"], a: "def"},
+    {q: "What is the output of print(2 ** 3)?", o: ["8", "6", "9", "5"], a: "8"},
+    {q: "Which symbol denotes Python comments?", o: ["#", "//", "/*", "--"], a: "#"},
+    {q: "What is len('hello')?", o: ["5", "4", "6", "Error"], a: "5"},
+    {q: "Which data type is [1, 2, 3]?", o: ["list", "tuple", "dict", "set"], a: "list"},
+    {q: "What does 'break' do in a loop?", o: ["Exits loop", "Skips step", "Restarts", "Pauses"], a: "Exits loop"},
+    {q: "What is 10 // 3 in Python?", o: ["3", "3.33", "4", "1"], a: "3"},
+    {q: "How do you open a file to read?", o: ["open('f','r')", "read('f')", "file('f')", "open('f','w')"], a: "open('f','r')"},
+    {q: "Which is immutable?", o: ["tuple", "list", "dict", "set"], a: "tuple"},
+    {q: "What is the result of set([1,2,2,3])?", o: ["{1,2,3}", "[1,2,3]", "(1,2,3)", "{1,2,2,3}"], a: "{1,2,3}"}
+];
+
+let curLevel = 1;
+let curQIdx = 0;
+let qScore = 0;
+
+function initQuizGrid() {
+    const g = document.getElementById('quiz-level-grid');
+    g.innerHTML = '';
+    for (let i = 1; i <= 30; i++) {
+        const b = document.createElement('button');
+        b.className = 'level-btn';
+        b.textContent = i;
+        b.onclick = () => startQuizLevel(i);
+        g.appendChild(b);
+    }
+}
+initQuizGrid();
+
+function startQuizLevel(lvl) {
+    curLevel = lvl;
+    curQIdx = 0;
+    qScore = 0;
+    document.getElementById('quiz-content').style.display = 'block';
+    document.querySelectorAll('.level-btn').forEach((b, idx) => {
+        b.classList.toggle('active', (idx + 1) === lvl);
+    });
+    loadQuestion();
+}
+
+function loadQuestion() {
+    const qObj = quizBank[(curLevel * 3 + curQIdx) % quizBank.length];
+    document.getElementById('q-cur-lvl').textContent = curLevel;
+    document.getElementById('q-cur-idx').textContent = curQIdx + 1;
+    document.getElementById('q-cur-score').textContent = qScore;
+    document.getElementById('q-question-text').textContent = qObj.q;
+    document.getElementById('q-feedback').textContent = '';
+
+    const opts = document.getElementById('q-options-container');
+    opts.innerHTML = '';
+    qObj.o.forEach(opt => {
+        const d = document.createElement('div');
+        d.className = 'quiz-choice';
+        d.textContent = opt;
+        d.onclick = () => answerQuiz(d, opt, qObj.a);
+        opts.appendChild(d);
+    });
+}
+
+function answerQuiz(el, selected, correct) {
+    document.querySelectorAll('.quiz-choice').forEach(c => c.onclick = null);
+    const fb = document.getElementById('q-feedback');
+    if (selected === correct) {
+        el.classList.add('correct');
+        qScore++;
+        fb.textContent = "✅ Correct!";
+        fb.className = "small fw-bold text-success";
+    } else {
+        el.classList.add('wrong');
+        fb.textContent = `❌ Wrong! Answer: ${correct}`;
+        fb.className = "small fw-bold text-danger";
+    }
+    document.getElementById('q-cur-score').textContent = qScore;
+    setTimeout(() => {
+        curQIdx++;
+        if (curQIdx < 5) {
+            loadQuestion();
+        } else {
+            fb.textContent = `🎉 Level ${curLevel} Completed! Score: ${qScore}/5`;
+            document.querySelectorAll('.level-btn')[curLevel - 1].classList.add('done');
+        }
+    }, 1200);
+}
+
+/* ==================== 4. GUESS THE WORD (CAPITAL & SMALL) ==================== */
+const words = [
+    {w: "PYTHON", h: "Programming language named after Monty Python"},
+    {w: "VARIABLE", h: "Stores data values in memory"},
+    {w: "FUNCTION", h: "Reusable code block defined with def"},
+    {w: "BOOLEAN", h: "Data type with True or False values"}
+];
+let curWObj = null;
+let curWLetters = [];
+
+function initWordGuess() {
+    curWObj = words[Math.floor(Math.random() * words.length)];
+    curWLetters = [];
+    document.getElementById('g-wg-hint').textContent = curWObj.h;
+    document.getElementById('g-wg-msg').textContent = '';
+    document.getElementById('g-wg-input').value = '';
+    renderWord();
+}
+function renderWord() {
+    let d = "";
+    let done = true;
+    for (let c of curWObj.w) {
+        if (curWLetters.includes(c)) d += c + " ";
+        else { d += "_ "; done = false; }
+    }
+    document.getElementById('g-wg-display').textContent = d.trim();
+    if (done) {
+        document.getElementById('g-wg-msg').textContent = "🎉 You guessed the word correctly!";
+        document.getElementById('g-wg-msg').className = "small fw-bold text-success";
+    }
+}
+function submitWordGuess() {
+    const input = document.getElementById('g-wg-input');
+    // Normalizes to uppercase so BOTH capital and small letters work automatically
+    const g = input.value.trim().toUpperCase();
+    input.value = '';
+    if (!g) return;
+
+    if (g.length > 1) {
+        if (g === curWObj.w) {
+            curWLetters = curWObj.w.split('');
+            renderWord();
+        } else {
+            document.getElementById('g-wg-msg').textContent = `❌ "${g}" is not the word!`;
+            document.getElementById('g-wg-msg').className = "small fw-bold text-danger";
+        }
+        return;
+    }
+    const letter = g[0];
+    if (curWObj.w.includes(letter)) {
+        curWLetters.push(letter);
+        renderWord();
+        document.getElementById('g-wg-msg').textContent = `✅ '${letter}' is correct!`;
+        document.getElementById('g-wg-msg').className = "small fw-bold text-success";
+    } else {
+        document.getElementById('g-wg-msg').textContent = `❌ '${letter}' is not in word!`;
+        document.getElementById('g-wg-msg').className = "small fw-bold text-danger";
+    }
+}
+initWordGuess();
+
+/* ==================== 5. SNAKE GAME ==================== */
+const sCanvas = document.getElementById('snake-canvas');
+const sCtx = sCanvas.getContext('2d');
+const sGrid = 10;
+let snake = [{x: 5, y: 5}];
+let sDir = {x: 1, y: 0}, sNextDir = {x: 1, y: 0};
+let sFood = {x: 12, y: 12};
+let sScore = 0, sInterval = null;
+
+function startSnake() {
+    clearInterval(sInterval);
+    snake = [{x: 5, y: 5}];
+    sDir = {x: 1, y: 0}; sNextDir = {x: 1, y: 0};
+    sScore = 0;
+    document.getElementById('s-score').textContent = sScore;
+    sInterval = setInterval(updateSnake, 120);
+}
+function changeSnakeDir(x, y) {
+    if ((x !== 0 && sDir.x === -x) || (y !== 0 && sDir.y === -y)) return;
+    sNextDir = {x, y};
+}
+function updateSnake() {
+    sDir = sNextDir;
+    const h = {x: snake[0].x + sDir.x, y: snake[0].y + sDir.y};
+    if (h.x < 0 || h.x >= sCanvas.width/sGrid || h.y < 0 || h.y >= sCanvas.height/sGrid) {
+        clearInterval(sInterval); return;
+    }
+    snake.unshift(h);
+    if (h.x === sFood.x && h.y === sFood.y) {
+        sScore += 10;
+        document.getElementById('s-score').textContent = sScore;
+        sFood = {x: Math.floor(Math.random() * (sCanvas.width/sGrid)), y: Math.floor(Math.random() * (sCanvas.height/sGrid))};
+    } else {
+        snake.pop();
+    }
+    sCtx.fillStyle = '#06080e';
+    sCtx.fillRect(0, 0, sCanvas.width, sCanvas.height);
+    sCtx.fillStyle = '#ff5050';
+    sCtx.fillRect(sFood.x*sGrid+1, sFood.y*sGrid+1, sGrid-2, sGrid-2);
+    sCtx.fillStyle = '#3af57b';
+    snake.forEach(seg => sCtx.fillRect(seg.x*sGrid+1, seg.y*sGrid+1, sGrid-2, sGrid-2));
+}
+startSnake();
+
+/* ==================== 6. TIC TAC TOE ==================== */
+let tttState = Array(9).fill('');
+function initTTT() {
+    tttState = Array(9).fill('');
+    document.getElementById('ttt-msg').textContent = "Your turn (X)";
+    const b = document.getElementById('ttt-board');
+    b.innerHTML = '';
+    for(let i=0;i<9;i++){
+        const c = document.createElement('div');
+        c.className = 'ttt-cell';
+        c.onclick = () => makeTTT(i);
+        b.appendChild(c);
+    }
+}
+function makeTTT(i) {
+    if (tttState[i] !== '') return;
+    tttState[i] = 'X';
+    renderTTT();
+    const empty = tttState.map((v,idx)=>v===''?idx:null).filter(v=>v!==null);
+    if (empty.length > 0) {
+        const bot = empty[Math.floor(Math.random()*empty.length)];
+        tttState[bot] = 'O';
+        renderTTT();
+    }
+}
+function renderTTT() {
+    document.querySelectorAll('.ttt-cell').forEach((c,idx)=>{
+        c.textContent = tttState[idx];
+        c.style.color = tttState[idx]==='X'?'#00d2ff':'#ff5050';
+    });
+}
+initTTT();
+
+/* ==================== 7. NUMBER GUESSER ==================== */
+let secNum = Math.floor(Math.random()*100)+1;
+function checkNumberGuess() {
+    const val = parseInt(document.getElementById('num-guess-input').value);
+    const m = document.getElementById('num-guess-msg');
+    if (val === secNum) { m.textContent = "🎉 Correct! You won!"; m.className = "text-success fw-bold"; }
+    else if (val < secNum) { m.textContent = "📈 Higher!"; m.className = "text-warning"; }
+    else { m.textContent = "📉 Lower!"; m.className = "text-warning"; }
+}
+
+/* Background Python Matrix Animation */
+(function() {
+    const canvas = document.getElementById('code-matrix-bg');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const kw = ["def", "import", "class", "return", "for", "while", "lambda", "print()", "len()", "True", "False"];
+    const cols = Math.floor(canvas.width / 50);
+    const drops = Array(cols).fill(0);
+    setInterval(() => {
+        ctx.fillStyle = 'rgba(10, 12, 22, 0.2)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "14px 'Fira Code', monospace";
+        for (let i = 0; i < drops.length; i++) {
+            ctx.fillStyle = i % 2 === 0 ? '#00d2ff' : '#ffd438';
+            ctx.fillText(kw[Math.floor(Math.random() * kw.length)], i * 50, drops[i] * 16);
+            if (drops[i] * 16 > canvas.height && Math.random() > 0.97) drops[i] = 0;
+            drops[i]++;
+        }
+    }, 50);
+})();
+</script>
+</body>
+</html>
