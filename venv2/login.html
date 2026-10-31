@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Login — PyLearn Hub{% endblock %}
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div style="background: rgba(255,255,255,0.07); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);">
+        <h2 class="text-center mb-4" style="background: linear-gradient(90deg, #00d2ff, #3a7bd5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800;">
+            <i class="fas fa-sign-in-alt"></i> Welcome Back
+        </h2>
+        <form method="POST" action="/login">
+            <div class="mb-3">
+                <label class="form-label text-light">Username</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-user"></i></span>
+                    <input type="text" name="username" class="form-control bg-dark border-secondary text-light" required placeholder="Enter username">
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label text-light">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-lock"></i></span>
+                    <input type="password" name="password" class="form-control bg-dark border-secondary text-light" required placeholder="Enter password">
+                </div>
+            </div>
+            <button type="submit" class="btn w-100 py-2 fw-bold" style="background: linear-gradient(135deg, #00d2ff, #3a7bd5); color: #fff; border: none; border-radius: 10px;">Login</button>
+        </form>
+        <p class="text-center mt-3 text-secondary mb-0">
+            Don't have an account? <a href="/register" style="color: #00d2ff; text-decoration: none;">Register here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
