@@ -93,6 +93,20 @@ body{
     position: relative;
     z-index: 2;
 }
+.site-credit {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 22px 16px;
+    margin-top: 28px;
+    color: #8492ad;
+    font-size: .88rem;
+    border-top: 1px solid rgba(255,255,255,.07);
+}
+.site-credit strong {
+    color: #00d2ff;
+    font-weight: 700;
+}
 </style>
 {% block extra_css %}{% endblock %}
 </head>
@@ -140,6 +154,8 @@ body{
 
 {% block content %}{% endblock %}
 </div>
+
+<footer class="site-credit">Made with <span aria-label="love">♥</span> by <strong>Yash Tyagi</strong> · PyLearn Hub</footer>
 
 <!-- Python code stream animation script -->
 <script>
