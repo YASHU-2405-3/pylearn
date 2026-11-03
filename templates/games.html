@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}12 Python Mini Games — PyLearn Hub{% endblock %}
+{% block title %}32 Python Mini Games — PyLearn Hub{% endblock %}
 {% block extra_css %}
 <style>
 .games-header {
@@ -121,13 +121,31 @@
     background: rgba(0, 210, 255, 0.15);
     border-color: rgba(0, 210, 255, 0.4);
 }
+
+/* Additional mini-game layouts */
+.mini-board{display:grid;gap:6px;margin:12px auto;max-width:290px}
+.mole-grid{grid-template-columns:repeat(3,1fr)}
+.mole-hole{height:54px;border-radius:10px;border:1px solid #526078;background:#20283c;color:#fff;font-size:1.7rem}
+.tile2048{height:54px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.15rem;color:#fff}
+#game-2048 .mini-board{grid-template-columns:repeat(4,1fr)}
+.connect-board{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;background:#2457a6;padding:8px;border-radius:12px;max-width:320px;margin:10px auto}
+.connect-drop{border:0;border-radius:6px;background:#173d78;color:white;padding:4px 0}
+.connect-cell{aspect-ratio:1;border-radius:50%;border:2px solid rgba(255,255,255,.12)}
+.lights-grid{grid-template-columns:repeat(5,1fr);max-width:250px}
+.light-cell{aspect-ratio:1;border:1px solid #58647a;border-radius:7px;color:#fff;font-size:1.1rem}
+.target-area{height:145px;position:relative;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;margin:10px 0;overflow:hidden}
+#target-hit{position:absolute;width:38px;height:38px;border:0;border-radius:50%;background:#ff5050;color:white;font-size:1.3rem}
+.maze-board{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;max-width:270px;margin:10px auto}
+.maze-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:1rem}
+@media(max-width:420px){.games-grid{grid-template-columns:minmax(0,1fr);padding:0 12px}.game-card{padding:17px}.game-title{font-size:1.08rem}}
+
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="games-header">
-    <h1><i class="fas fa-gamepad"></i> 12 Python Mini Games</h1>
-    <p class="text-secondary">Sharpen your programming reflexes, algorithmic memory, and vocabulary while having fun!</p>
+    <h1><i class="fas fa-gamepad"></i> 32 Python Mini Games</h1>
+    <p class="text-secondary">Play 32 interactive games to sharpen logic, memory, speed, maths, and Python skills!</p>
 </div>
 
 <div class="games-grid">
@@ -338,6 +356,153 @@
             <button class="btn btn-sm btn-outline-secondary" onclick="resetCoin()">Reset</button>
         </div>
     </div>
+
+    <!-- 13. Simon Sequence -->
+    <div class="game-card"><div>
+        <div class="game-title">13. 🧠 Simon Sequence</div><div class="game-desc">Watch the colour pattern, then repeat it in the correct order.</div>
+        <div class="d-flex gap-2 justify-content-center my-2" id="simon-pads">
+            <button class="game-btn" style="background:#e74c3c" onclick="simonTap(0)">Red</button>
+            <button class="game-btn" style="background:#27ae60" onclick="simonTap(1)">Green</button>
+            <button class="game-btn" style="background:#3498db" onclick="simonTap(2)">Blue</button>
+            <button class="game-btn" style="background:#f1c40f;color:#222" onclick="simonTap(3)">Yellow</button>
+        </div><p id="simon-status" class="small text-center">Press Start to begin.</p><p class="small text-center">Level: <b id="simon-level">0</b></p>
+    </div><div class="text-center"><button class="game-btn" onclick="simonStart()">Start / Restart</button></div></div>
+
+    <!-- 14. 2048 -->
+    <div class="game-card" id="game-2048"><div>
+        <div class="game-title">14. 🔢 2048</div><div class="game-desc">Combine matching tiles to reach 2048. Use arrow keys or buttons.</div>
+        <div id="g2048-board" class="mini-board"></div><p id="g2048-score" class="small text-center">Score: 0</p>
+        <div class="d-flex flex-wrap gap-1 justify-content-center">
+            <button class="game-btn" onclick="move2048('up')">↑</button><button class="game-btn" onclick="move2048('left')">←</button><button class="game-btn" onclick="move2048('down')">↓</button><button class="game-btn" onclick="move2048('right')">→</button>
+        </div>
+    </div><div class="text-center"><button class="game-btn game-btn-secondary" onclick="init2048()">New Game</button></div></div>
+
+    <!-- 15. Whack a Mole -->
+    <div class="game-card"><div>
+        <div class="game-title">15. 🐹 Whack-a-Mole</div><div class="game-desc">Tap the mole as it appears. Score as many points as you can in 20 seconds.</div>
+        <div id="mole-grid" class="mini-board mole-grid"></div>
+        <p class="small text-center">Score: <b id="mole-score">0</b> · Time: <b id="mole-time">20</b>s</p>
+        <p id="mole-status" class="small text-center">Press Start.</p>
+    </div><div class="text-center"><button class="game-btn" onclick="startMole()">Start / Restart</button></div></div>
+
+    <!-- 16. Connect Four -->
+    <div class="game-card"><div>
+        <div class="game-title">16. 🔴 Connect Four</div><div class="game-desc">Take turns with the computer. Connect four discs in a row to win.</div>
+        <div id="connect-board" class="connect-board"></div><p id="connect-status" class="small text-center">Your turn — Red.</p>
+    </div><div class="text-center"><button class="game-btn" onclick="initConnect()">Restart</button></div></div>
+
+    <!-- 17. Lights Out -->
+    <div class="game-card"><div>
+        <div class="game-title">17. 💡 Lights Out</div><div class="game-desc">Turn off every light. Tapping a tile toggles it and its neighbours.</div>
+        <div id="lights-board" class="mini-board lights-grid"></div><p id="lights-status" class="small text-center">Switch all lights off!</p>
+    </div><div class="text-center"><button class="game-btn" onclick="initLights()">New Puzzle</button></div></div>
+
+    <!-- 18. Dice Duel -->
+    <div class="game-card"><div>
+        <div class="game-title">18. 🎲 Dice Duel</div><div class="game-desc">Roll two dice. Try to beat the computer's total.</div>
+        <div class="d-flex justify-content-around text-center my-3"><div><div id="dice-you" style="font-size:2.4rem">🎲</div><b>You</b><div id="dice-you-score">0</div></div><div><div id="dice-cpu" style="font-size:2.4rem">🎲</div><b>Computer</b><div id="dice-cpu-score">0</div></div></div>
+        <p id="dice-status" class="small text-center">First to roll wins this round.</p>
+    </div><div class="text-center"><button class="game-btn" onclick="rollDuel()">Roll Dice</button><button class="game-btn game-btn-secondary" onclick="resetDuel()">Reset</button></div></div>
+
+    <!-- 19. Color Tap -->
+    <div class="game-card"><div>
+        <div class="game-title">19. 🎨 Color Tap</div><div class="game-desc">Tap the button matching the colour name—not the colour of the text.</div>
+        <h3 id="color-word" class="text-center my-3">BLUE</h3><div id="color-options" class="d-flex flex-wrap gap-2 justify-content-center"></div>
+        <p id="color-status" class="small text-center mt-2">Score: <b id="color-score">0</b></p>
+    </div><div class="text-center"><button class="game-btn" onclick="nextColor()">New Round</button></div></div>
+
+    <!-- 20. Prime Sprint -->
+    <div class="game-card"><div>
+        <div class="game-title">20. 🧮 Prime Sprint</div><div class="game-desc">Decide whether the displayed number is prime.</div>
+        <h2 id="prime-number" class="text-center text-info">17</h2><p id="prime-status" class="small text-center">Is it prime?</p>
+    </div><div class="text-center"><button class="game-btn" onclick="answerPrime(true)">Prime</button><button class="game-btn game-btn-secondary" onclick="answerPrime(false)">Not Prime</button><p class="small mt-2">Score: <b id="prime-score">0</b></p></div></div>
+
+    <!-- 21. Palindrome Challenge -->
+    <div class="game-card"><div>
+        <div class="game-title">21. 🔁 Palindrome Challenge</div><div class="game-desc">A palindrome reads the same forwards and backwards. Test a word.</div>
+        <input id="pal-input" class="form-control bg-dark text-light border-secondary" placeholder="Enter a word or phrase">
+        <p id="pal-status" class="small text-center mt-2">Example: level</p>
+    </div><div class="text-center"><button class="game-btn" onclick="checkPalindrome()">Check</button><button class="game-btn game-btn-secondary" onclick="newPalindrome()">Example</button></div></div>
+
+    <!-- 22. FizzBuzz -->
+    <div class="game-card"><div>
+        <div class="game-title">22. ⚡ FizzBuzz Challenge</div><div class="game-desc">For each number: multiples of 3 = Fizz, 5 = Buzz, both = FizzBuzz.</div>
+        <h2 id="fizz-number" class="text-center text-warning">1</h2><div id="fizz-options" class="d-flex flex-wrap gap-2 justify-content-center"></div>
+        <p id="fizz-status" class="small text-center mt-2">Score: <b id="fizz-score">0</b></p>
+    </div><div class="text-center"><button class="game-btn game-btn-secondary" onclick="nextFizz()">Skip / Next</button></div></div>
+
+    <!-- 23. Binary Challenge -->
+    <div class="game-card"><div>
+        <div class="game-title">23. 💻 Binary Challenge</div><div class="game-desc">Convert the decimal number into binary (base 2).</div>
+        <h2 id="binary-number" class="text-center text-info">10</h2><input id="binary-answer" class="form-control bg-dark text-light border-secondary text-center" placeholder="Binary answer">
+        <p id="binary-status" class="small text-center mt-2">Score: <b id="binary-score">0</b></p>
+    </div><div class="text-center"><button class="game-btn" onclick="checkBinary()">Check</button><button class="game-btn game-btn-secondary" onclick="nextBinary()">Next</button></div></div>
+
+    <!-- 24. Predict Python Output -->
+    <div class="game-card"><div>
+        <div class="game-title">24. 🐍 Predict Python Output</div><div class="game-desc">Read the tiny Python snippet and choose its output.</div>
+        <pre id="output-code" class="bg-dark text-info p-3 rounded"></pre><div id="output-options" class="d-grid gap-2"></div>
+        <p id="output-status" class="small text-center mt-2">Score: <b id="output-score">0</b></p>
+    </div><div class="text-center"><button class="game-btn game-btn-secondary" onclick="nextOutput()">Next Question</button></div></div>
+
+    <!-- 25. Anagram -->
+    <div class="game-card"><div>
+        <div class="game-title">25. 🔤 Anagram Fix</div><div class="game-desc">Rearrange the letters to make a valid Python-related word.</div>
+        <h2 id="anagram-word" class="text-center text-warning font-monospace">HTOPYN</h2><input id="anagram-answer" class="form-control bg-dark text-light border-secondary" placeholder="Your answer">
+        <p id="anagram-status" class="small text-center mt-2"></p>
+    </div><div class="text-center"><button class="game-btn" onclick="checkAnagram()">Check</button><button class="game-btn game-btn-secondary" onclick="nextAnagram()">Next Word</button></div></div>
+
+    <!-- 26. Target Clicker -->
+    <div class="game-card"><div>
+        <div class="game-title">26. 🎯 Target Clicker</div><div class="game-desc">Click the target as many times as possible in 10 seconds.</div>
+        <div id="target-area" class="target-area"><button id="target-hit" onclick="hitTarget()">●</button></div>
+        <p class="small text-center">Hits: <b id="target-score">0</b> · Time: <b id="target-time">10</b>s</p><p id="target-status" class="small text-center">Press Start.</p>
+    </div><div class="text-center"><button class="game-btn" onclick="startTarget()">Start / Restart</button></div></div>
+
+    <!-- 27. Higher or Lower -->
+    <div class="game-card"><div>
+        <div class="game-title">27. 📈 Higher or Lower</div><div class="game-desc">Guess whether the next number will be higher or lower.</div>
+        <h2 id="hl-current" class="text-center text-info">50</h2><p id="hl-status" class="small text-center">Will the next number be higher or lower?</p>
+        <div class="d-flex justify-content-center gap-2"><button class="game-btn" onclick="playHL('higher')">Higher ↑</button><button class="game-btn" onclick="playHL('lower')">Lower ↓</button></div>
+        <p class="small text-center mt-2">Streak: <b id="hl-score">0</b></p>
+    </div><div class="text-center"><button class="game-btn game-btn-secondary" onclick="resetHL()">Reset</button></div></div>
+
+    <!-- 28. Odd One Out -->
+    <div class="game-card"><div>
+        <div class="game-title">28. 🧐 Odd One Out</div><div class="game-desc">Find the item that does not belong to the same category.</div>
+        <h5 id="odd-question" class="text-center">Which one is not a Python data type?</h5><div id="odd-options" class="d-grid gap-2"></div>
+        <p id="odd-status" class="small text-center mt-2">Score: <b id="odd-score">0</b></p>
+    </div><div class="text-center"><button class="game-btn game-btn-secondary" onclick="nextOdd()">Next Set</button></div></div>
+
+    <!-- 29. Number Pattern -->
+    <div class="game-card"><div>
+        <div class="game-title">29. 🔍 Number Pattern</div><div class="game-desc">Find the missing number in the sequence.</div>
+        <h3 id="pattern-question" class="text-center text-info">2, 4, 6, ?</h3><input id="pattern-answer" type="number" class="form-control bg-dark text-light border-secondary" placeholder="Missing number">
+        <p id="pattern-status" class="small text-center mt-2"></p>
+    </div><div class="text-center"><button class="game-btn" onclick="checkPattern()">Check</button><button class="game-btn game-btn-secondary" onclick="nextPattern()">Next</button></div></div>
+
+    <!-- 30. Rock Paper Scissors Lizard Spock -->
+    <div class="game-card"><div>
+        <div class="game-title">30. 🖖 RPS Lizard Spock</div><div class="game-desc">An expanded five-choice version of Rock Paper Scissors.</div>
+        <div class="d-flex flex-wrap justify-content-center gap-2"><button class="game-btn" onclick="playRPSLS('Rock')">✊ Rock</button><button class="game-btn" onclick="playRPSLS('Paper')">✋ Paper</button><button class="game-btn" onclick="playRPSLS('Scissors')">✌ Scissors</button><button class="game-btn" onclick="playRPSLS('Lizard')">🦎 Lizard</button><button class="game-btn" onclick="playRPSLS('Spock')">🖖 Spock</button></div>
+        <p id="rpsls-status" class="small text-center mt-3">Choose your move.</p><p class="small text-center">Score: <b id="rpsls-score">0</b></p>
+    </div><div class="text-center"><button class="game-btn game-btn-secondary" onclick="resetRPSLS()">Reset Score</button></div></div>
+
+    <!-- 31. Quick Estimate -->
+    <div class="game-card"><div>
+        <div class="game-title">31. ➗ Quick Estimate</div><div class="game-desc">Choose the closest rounded result for each multiplication.</div>
+        <h3 id="estimate-question" class="text-center text-warning">19 × 21 ≈ ?</h3><div id="estimate-options" class="d-grid gap-2"></div>
+        <p id="estimate-status" class="small text-center mt-2">Score: <b id="estimate-score">0</b></p>
+    </div><div class="text-center"><button class="game-btn game-btn-secondary" onclick="nextEstimate()">New Question</button></div></div>
+
+    <!-- 32. Mini Maze -->
+    <div class="game-card"><div>
+        <div class="game-title">32. 🧩 Mini Maze</div><div class="game-desc">Guide the blue player to the green exit using arrow buttons.</div>
+        <div id="maze-board" class="maze-board"></div><div class="d-flex flex-wrap gap-2 justify-content-center mt-2">
+            <button class="game-btn" onclick="moveMaze(0,-1)">↑</button><button class="game-btn" onclick="moveMaze(-1,0)">←</button><button class="game-btn" onclick="moveMaze(0,1)">↓</button><button class="game-btn" onclick="moveMaze(1,0)">→</button>
+        </div><p id="maze-status" class="small text-center mt-2">Find the exit!</p>
+    </div><div class="text-center"><button class="game-btn game-btn-secondary" onclick="initMaze()">Restart Maze</button></div></div>
+
 </div>
 
 <script>
@@ -932,5 +1097,116 @@ function resetCoin() {
     document.getElementById('coin-result').textContent = 'Flip it!';
     updateCoinStats();
 }
+
+/* ==================== 13. SIMON SEQUENCE ==================== */
+let simonSeq=[], simonStep=0, simonLock=false;
+function simonStart(){simonSeq=[];simonStep=0;document.getElementById('simon-level').textContent='0';document.getElementById('simon-status').textContent='Watch the sequence!';simonNext();}
+function simonNext(){simonSeq.push(Math.floor(Math.random()*4));simonStep=0;simonLock=true;const labels=['Red','Green','Blue','Yellow'];let i=0;const show=()=>{if(i>=simonSeq.length){simonLock=false;document.getElementById('simon-status').textContent='Your turn: repeat the pattern.';return;}const b=document.querySelectorAll('#simon-pads button')[simonSeq[i++]];b.style.filter='brightness(1.8)';setTimeout(()=>{b.style.filter='';setTimeout(show,180);},350);};setTimeout(show,350);}
+function simonTap(n){if(simonLock||!simonSeq.length)return;if(simonSeq[simonStep]!==n){document.getElementById('simon-status').textContent='❌ Wrong pattern. Press Start to try again.';simonSeq=[];return;}simonStep++;if(simonStep===simonSeq.length){document.getElementById('simon-level').textContent=simonSeq.length;document.getElementById('simon-status').textContent='✅ Correct! Next level...';simonLock=true;setTimeout(simonNext,650);}}
+
+/* ==================== 14. 2048 ==================== */
+let board2048=[],score2048=0;
+function init2048(){board2048=Array.from({length:4},()=>Array(4).fill(0));score2048=0;spawn2048();spawn2048();draw2048();}
+function spawn2048(){const e=[];board2048.forEach((r,y)=>r.forEach((v,x)=>{if(!v)e.push([y,x]);}));if(e.length){const [y,x]=e[Math.floor(Math.random()*e.length)];board2048[y][x]=Math.random()<.9?2:4;}}
+function draw2048(){const el=document.getElementById('g2048-board');el.innerHTML='';board2048.flat().forEach(v=>{const d=document.createElement('div');d.className='tile2048';d.textContent=v||'';d.style.background=v?'hsl('+((Math.log2(v)*29)%360)+',55%,38%)':'rgba(255,255,255,.06)';el.appendChild(d);});document.getElementById('g2048-score').textContent='Score: '+score2048;}
+function move2048(dir){const before=JSON.stringify(board2048);for(let i=0;i<4;i++){let line=dir==='left'||dir==='right'?board2048[i].slice():board2048.map(r=>r[i]);if(dir==='right'||dir==='down')line.reverse();line=line.filter(Boolean);for(let j=0;j<line.length-1;j++)if(line[j]===line[j+1]){line[j]*=2;score2048+=line[j];line.splice(j+1,1);}while(line.length<4)line.push(0);if(dir==='right'||dir==='down')line.reverse();if(dir==='left'||dir==='right')board2048[i]=line;else line.forEach((v,k)=>board2048[k][i]=v);}if(before!==JSON.stringify(board2048))spawn2048();draw2048();if(board2048.flat().includes(2048))document.getElementById('g2048-score').textContent='🎉 2048 reached! Score: '+score2048;}
+document.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)&&document.getElementById('game-2048')){move2048(({ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'})[e.key]);}});
+
+/* ==================== 15. WHACK A MOLE ==================== */
+let moleTimer=null,moleTick=null,moleScore=0,moleLeft=20,moleActive=false;
+function drawMoles(){const g=document.getElementById('mole-grid');g.innerHTML='';for(let i=0;i<9;i++){const b=document.createElement('button');b.className='mole-hole';b.textContent=i===window.moleIndex?'🐹':'·';b.onclick=()=>{if(moleActive&&i===window.moleIndex){moleScore++;document.getElementById('mole-score').textContent=moleScore;window.moleIndex=-1;drawMoles();}};g.appendChild(b);}}
+function startMole(){clearInterval(moleTick);clearInterval(moleTimer);moleScore=0;moleLeft=20;moleActive=true;window.moleIndex=-1;document.getElementById('mole-score').textContent='0';document.getElementById('mole-status').textContent='Go!';drawMoles();moleTick=setInterval(()=>{window.moleIndex=Math.floor(Math.random()*9);drawMoles();},650);moleTimer=setInterval(()=>{moleLeft--;document.getElementById('mole-time').textContent=moleLeft;if(moleLeft<=0){clearInterval(moleTimer);clearInterval(moleTick);moleActive=false;window.moleIndex=-1;drawMoles();document.getElementById('mole-status').textContent='Time up! Final score: '+moleScore;}},1000);}
+
+/* ==================== 16. CONNECT FOUR ==================== */
+let connectGrid=[];
+function initConnect(){connectGrid=Array.from({length:6},()=>Array(7).fill(0));drawConnect();document.getElementById('connect-status').textContent='Your turn — Red.';}
+function drawConnect(){const el=document.getElementById('connect-board');el.innerHTML='';for(let x=0;x<7;x++){const b=document.createElement('button');b.className='connect-drop';b.textContent='↓';b.onclick=()=>dropConnect(x,1);el.appendChild(b);}connectGrid.forEach(row=>row.forEach(v=>{const d=document.createElement('span');d.className='connect-cell';d.style.background=v===1?'#e74c3c':v===2?'#f1c40f':'#20283c';el.appendChild(d);}));}
+function connectWin(p){for(let y=0;y<6;y++)for(let x=0;x<7;x++)if(connectGrid[y][x]===p){for(const [dy,dx] of [[0,1],[1,0],[1,1],[1,-1]]){let n=1;for(let k=1;k<4;k++){let yy=y+dy*k,xx=x+dx*k;if(yy>=0&&yy<6&&xx>=0&&xx<7&&connectGrid[yy][xx]===p)n++;else break;}if(n>=4)return true;}}return false;}
+function dropConnect(x,p){let y=-1;for(let r=5;r>=0;r--)if(!connectGrid[r][x]){y=r;break;}if(y<0)return;connectGrid[y][x]=p;if(connectWin(p)){drawConnect();document.getElementById('connect-status').textContent=p===1?'🎉 You connected four!':'Computer connected four!';return;}if(connectGrid.flat().every(Boolean)){drawConnect();document.getElementById('connect-status').textContent='Draw!';return;}if(p===1){let cols=[...Array(7).keys()].filter(k=>connectGrid[0][k]===0);if(cols.length){let cx=cols[Math.floor(Math.random()*cols.length)];dropConnect(cx,2);if(!connectWin(2)&&!connectGrid.flat().every(Boolean))document.getElementById('connect-status').textContent='Your turn — Red.';} }drawConnect();}
+
+/* ==================== 17. LIGHTS OUT ==================== */
+let lights=[];
+function initLights(){lights=Array.from({length:25},()=>Math.random()<.48);drawLights();document.getElementById('lights-status').textContent='Switch all lights off!';}
+function drawLights(){const el=document.getElementById('lights-board');el.innerHTML='';lights.forEach((v,i)=>{const b=document.createElement('button');b.className='light-cell';b.textContent=v?'●':'';b.style.background=v?'#f1c40f':'#283044';b.onclick=()=>toggleLight(i);el.appendChild(b);});}
+function toggleLight(i){[i,i-5,i+5,i%5?i-1:-1,i%5!==4?i+1:-1].forEach(k=>{if(k>=0&&k<25&&!(Math.abs((k%5)-(i%5))>1))lights[k]=!lights[k];});drawLights();if(lights.every(v=>!v))document.getElementById('lights-status').textContent='🎉 All lights are off!';}
+
+/* ==================== 18. DICE DUEL ==================== */
+let dyScore=0,dcScore=0;
+function rollDuel(){const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6);document.getElementById('dice-you').textContent=['⚀','⚁','⚂','⚃','⚄','⚅'][a-1];document.getElementById('dice-cpu').textContent=['⚀','⚁','⚂','⚃','⚄','⚅'][b-1];if(a>b)dyScore++;else if(b>a)dcScore++;document.getElementById('dice-you-score').textContent=dyScore;document.getElementById('dice-cpu-score').textContent=dcScore;document.getElementById('dice-status').textContent=a>b?'You win this round!':b>a?'Computer wins this round!':'It is a tie!';}
+function resetDuel(){dyScore=dcScore=0;document.getElementById('dice-you-score').textContent='0';document.getElementById('dice-cpu-score').textContent='0';document.getElementById('dice-you').textContent=document.getElementById('dice-cpu').textContent='🎲';document.getElementById('dice-status').textContent='First to roll wins this round.';}
+
+/* ==================== 19. COLOR TAP ==================== */
+const colorNames=['RED','BLUE','GREEN','YELLOW'];let colorScore=0,colorCorrect='';
+function nextColor(){colorCorrect=colorNames[Math.floor(Math.random()*4)];const el=document.getElementById('color-word');el.textContent=colorCorrect;el.style.color=colorNames[Math.floor(Math.random()*4)].toLowerCase();const box=document.getElementById('color-options');box.innerHTML='';[...colorNames].sort(()=>Math.random()-.5).forEach(n=>{const b=document.createElement('button');b.className='game-btn';b.textContent=n;b.onclick=()=>{if(n===colorCorrect){colorScore++;document.getElementById('color-status').textContent='Correct! Score: '+colorScore;}else document.getElementById('color-status').textContent='Not quite. Correct: '+colorCorrect;nextColor();};box.appendChild(b);});}
+document.getElementById('color-score').textContent=colorScore;
+
+/* ==================== 20. PRIME SPRINT ==================== */
+let primeN=17,primeScore=0;
+function isPrimeGame(n){if(n<2)return false;for(let i=2;i*i<=n;i++)if(n%i===0)return false;return true;}
+function nextPrime(){primeN=2+Math.floor(Math.random()*48);document.getElementById('prime-number').textContent=primeN;}
+function answerPrime(v){const ok=v===isPrimeGame(primeN);if(ok){primeScore++;document.getElementById('prime-score').textContent=primeScore;}document.getElementById('prime-status').textContent=ok?'✅ Correct!':'❌ '+primeN+' is '+(isPrimeGame(primeN)?'prime':'not prime')+'.';nextPrime();}
+
+/* ==================== 21. PALINDROME ==================== */
+function checkPalindrome(){const raw=document.getElementById('pal-input').value.toLowerCase().replace(/[^a-z0-9]/g,'');const ok=raw.length>0&&raw===raw.split('').reverse().join('');document.getElementById('pal-status').textContent=ok?'✅ It is a palindrome!':'❌ Not a palindrome. Try again.';}
+function newPalindrome(){document.getElementById('pal-input').value='level';document.getElementById('pal-status').textContent='Try checking this example.';}
+
+/* ==================== 22. FIZZBUZZ ==================== */
+let fizzN=1,fizzScore=0;
+function fizzAnswer(v){const a=fizzN%15===0?'FizzBuzz':fizzN%3===0?'Fizz':fizzN%5===0?'Buzz':String(fizzN);if(v===a){fizzScore++;document.getElementById('fizz-score').textContent=fizzScore;document.getElementById('fizz-status').textContent='Correct!';}else document.getElementById('fizz-status').textContent='Answer: '+a;fizzN++;if(fizzN>30)fizzN=1;drawFizz();}
+function drawFizz(){document.getElementById('fizz-number').textContent=fizzN;const el=document.getElementById('fizz-options');el.innerHTML='';[''+fizzN,'Fizz','Buzz','FizzBuzz'].forEach(v=>{const b=document.createElement('button');b.className='game-btn';b.textContent=v;b.onclick=()=>fizzAnswer(v);el.appendChild(b);});}
+function nextFizz(){fizzN++;if(fizzN>30)fizzN=1;drawFizz();}
+
+/* ==================== 23. BINARY CHALLENGE ==================== */
+let binaryN=10,binaryScore=0;
+function nextBinary(){binaryN=2+Math.floor(Math.random()*62);document.getElementById('binary-number').textContent=binaryN;document.getElementById('binary-answer').value='';document.getElementById('binary-status').textContent='Score: '+binaryScore;}
+function checkBinary(){const a=document.getElementById('binary-answer').value.trim();if(a===binaryN.toString(2)){binaryScore++;document.getElementById('binary-status').textContent='✅ Correct! Score: '+binaryScore;}else document.getElementById('binary-status').textContent='❌ Correct binary: '+binaryN.toString(2);}
+
+/* ==================== 24. PYTHON OUTPUT ==================== */
+const outputQs=[{code:'print(2 + 3 * 2)',opts:['10','8','7','12'],a:'8'},{code:'x = "Py"\nprint(x + "thon")',opts:['Python','Py thon','Error','thon'],a:'Python'},{code:'print(len([4, 5, 6]))',opts:['2','3','6','Error'],a:'3'},{code:'print(10 // 3)',opts:['3.33','3','1','0'],a:'3'},{code:'print("Hi".lower())',opts:['HI','hi','Hi','Error'],a:'hi'}];let outputIndex=0,outputScore=0;
+function nextOutput(){const q=outputQs[outputIndex++%outputQs.length];document.getElementById('output-code').textContent=q.code;const el=document.getElementById('output-options');el.innerHTML='';q.opts.forEach(v=>{const b=document.createElement('button');b.className='trivia-opt';b.textContent=v;b.onclick=()=>{if(v===q.a){outputScore++;document.getElementById('output-score').textContent=outputScore;document.getElementById('output-status').textContent='Correct!';}else document.getElementById('output-status').textContent='Correct output: '+q.a;};el.appendChild(b);});}
+
+/* ==================== 25. ANAGRAM ==================== */
+const anaWords=['PYTHON','VARIABLE','FUNCTION','BOOLEAN','INTEGER','STRING'];let anaCurrent='';
+function nextAnagram(){anaCurrent=anaWords[Math.floor(Math.random()*anaWords.length)];let s=anaCurrent;while(s===anaCurrent)s=anaCurrent.split('').sort(()=>Math.random()-.5).join('');document.getElementById('anagram-word').textContent=s;document.getElementById('anagram-answer').value='';document.getElementById('anagram-status').textContent='';}
+function checkAnagram(){const ok=document.getElementById('anagram-answer').value.trim().toUpperCase()===anaCurrent;document.getElementById('anagram-status').textContent=ok?'✅ Correct!':'Try again!';}
+
+/* ==================== 26. TARGET CLICKER ==================== */
+let targetLeft=10,targetHits=0,targetClock=null,targetActive=false;
+function startTarget(){clearInterval(targetClock);targetLeft=10;targetHits=0;targetActive=true;document.getElementById('target-score').textContent='0';document.getElementById('target-time').textContent='10';document.getElementById('target-status').textContent='Go!';placeTarget();targetClock=setInterval(()=>{targetLeft--;document.getElementById('target-time').textContent=targetLeft;if(targetLeft<=0){clearInterval(targetClock);targetActive=false;document.getElementById('target-status').textContent='Time up! Final hits: '+targetHits;}},1000);}
+function placeTarget(){const area=document.getElementById('target-area'),b=document.getElementById('target-hit');b.style.left=Math.floor(Math.random()*Math.max(1,area.clientWidth-42))+'px';b.style.top=Math.floor(Math.random()*Math.max(1,area.clientHeight-42))+'px';}
+function hitTarget(){if(!targetActive)return;targetHits++;document.getElementById('target-score').textContent=targetHits;placeTarget();}
+
+/* ==================== 27. HIGHER OR LOWER ==================== */
+let hlNum=50,hlScore=0;
+function resetHL(){hlNum=1+Math.floor(Math.random()*99);hlScore=0;document.getElementById('hl-current').textContent=hlNum;document.getElementById('hl-score').textContent='0';document.getElementById('hl-status').textContent='Higher or lower?';}
+function playHL(v){const n=1+Math.floor(Math.random()*99),ok=v==='higher'?n>hlNum:n<hlNum;document.getElementById('hl-status').textContent=n===hlNum?'Same number — no point.':ok?'✅ Correct!':'❌ Not this time.';if(ok)hlScore++;document.getElementById('hl-score').textContent=hlScore;hlNum=n;document.getElementById('hl-current').textContent=n;}
+
+/* ==================== 28. ODD ONE OUT ==================== */
+const oddSets=[{q:'Which one is not a Python data type?',o:['list','tuple','dictionary','HTML'],a:'HTML'},{q:'Which one is not a loop keyword?',o:['for','while','repeat','break'],a:'repeat'},{q:'Which one is not a number?',o:['42','3.14','"hello"','-8'],a:'"hello"'},{q:'Which one is not a Python collection?',o:['list','set','tuple','integer'],a:'integer'}];let oddIdx=0,oddScore=0;
+function nextOdd(){const q=oddSets[oddIdx++%oddSets.length];document.getElementById('odd-question').textContent=q.q;const el=document.getElementById('odd-options');el.innerHTML='';q.o.forEach(v=>{const b=document.createElement('button');b.className='trivia-opt';b.textContent=v;b.onclick=()=>{if(v===q.a){oddScore++;document.getElementById('odd-score').textContent=oddScore;document.getElementById('odd-status').textContent='Correct!';}else document.getElementById('odd-status').textContent='Answer: '+q.a;};el.appendChild(b);});}
+
+/* ==================== 29. NUMBER PATTERN ==================== */
+let patternAns=8,patternBase=2;
+function nextPattern(){patternBase=2+Math.floor(Math.random()*8);patternAns=patternBase*4;document.getElementById('pattern-question').textContent=[patternBase,patternBase*2,patternBase*3,'?'].join(', ');document.getElementById('pattern-answer').value='';document.getElementById('pattern-status').textContent='What comes next?';}
+function checkPattern(){const ok=Number(document.getElementById('pattern-answer').value)===patternAns;document.getElementById('pattern-status').textContent=ok?'✅ Correct!':'❌ Try again.';}
+
+/* ==================== 30. RPS LIZARD SPOCK ==================== */
+let rpslsScore=0;const rpslsWins={Rock:['Scissors','Lizard'],Paper:['Rock','Spock'],Scissors:['Paper','Lizard'],Lizard:['Spock','Paper'],Spock:['Scissors','Rock']};
+function playRPSLS(u){const all=Object.keys(rpslsWins),b=all[Math.floor(Math.random()*5)];let msg=u===b?'Tie!':rpslsWins[u].includes(b)?'You win! '+u+' beats '+b+'.':'Computer wins! '+b+' beats '+u+'.';if(rpslsWins[u].includes(b))rpslsScore++;document.getElementById('rpsls-score').textContent=rpslsScore;document.getElementById('rpsls-status').textContent=msg;}
+function resetRPSLS(){rpslsScore=0;document.getElementById('rpsls-score').textContent='0';document.getElementById('rpsls-status').textContent='Choose your move.';}
+
+/* ==================== 31. QUICK ESTIMATE ==================== */
+let estimateAns=400,estimateScore=0;
+function nextEstimate(){const a=10+Math.floor(Math.random()*40),b=10+Math.floor(Math.random()*40);estimateAns=Math.round(a*b/100)*100;document.getElementById('estimate-question').textContent=a+' × '+b+' ≈ ?';const opts=[estimateAns,estimateAns+100,Math.max(0,estimateAns-100),estimateAns+200].sort(()=>Math.random()-.5);const el=document.getElementById('estimate-options');el.innerHTML='';opts.forEach(v=>{const bt=document.createElement('button');bt.className='trivia-opt';bt.textContent=v;bt.onclick=()=>{if(v===estimateAns){estimateScore++;document.getElementById('estimate-score').textContent=estimateScore;document.getElementById('estimate-status').textContent='Correct!';}else document.getElementById('estimate-status').textContent='Closest rounded answer: '+estimateAns;};el.appendChild(bt);});}
+
+/* ==================== 32. MINI MAZE ==================== */
+const mazeMap=['S..#..','##.#.#','...#..','.###.#','......','#####E'];let mazeX=0,mazeY=0;
+function drawMaze(){const el=document.getElementById('maze-board');el.innerHTML='';mazeMap.forEach((row,y)=>[...row].forEach((v,x)=>{const d=document.createElement('span');d.className='maze-cell';d.textContent=x===mazeX&&y===mazeY?'🔵':v==='E'?'🏁':v==='#'?'':'·';d.style.background=v==='#'?'#111827':v==='E'?'rgba(58,245,123,.3)':'rgba(255,255,255,.06)';el.appendChild(d);}));}
+function initMaze(){mazeX=0;mazeY=0;drawMaze();document.getElementById('maze-status').textContent='Find the exit!';}
+function moveMaze(dx,dy){const x=mazeX+dx,y=mazeY+dy;if(y<0||y>=mazeMap.length||x<0||x>=mazeMap[0].length||mazeMap[y][x]==='#')return;mazeX=x;mazeY=y;drawMaze();if(mazeMap[y][x]==='E')document.getElementById('maze-status').textContent='🎉 Maze completed!';}
+
+/* Initialise the 20 additional games */
+simonStart();init2048();drawMoles();initConnect();initLights();nextColor();nextPrime();newPalindrome();drawFizz();nextBinary();nextOutput();nextAnagram();resetHL();nextOdd();nextPattern();nextEstimate();initMaze();
+
 </script>
 {% endblock %}
