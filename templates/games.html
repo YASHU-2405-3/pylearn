@@ -242,7 +242,13 @@
         <div>
             <div class="game-title"><i class="fas fa-brain text-success"></i> 7. Memory Match</div>
             <div class="game-desc">Flip card pairs to match Python emojis and functions.</div>
+            <div class="d-flex justify-content-around small text-secondary mb-2">
+                <span>Moves: <b id="mem-moves" class="text-info">0</b></span>
+                <span>Time: <b id="mem-time" class="text-warning">0s</b></span>
+                <span>Pairs: <b id="mem-pairs" class="text-success">0/6</b></span>
+            </div>
             <div class="mem-grid" id="mem-board"></div>
+            <div id="mem-status" class="small text-center fw-bold mt-2" style="min-height:22px;">Find all matching pairs!</div>
         </div>
         <div class="text-center mt-2">
             <button class="game-btn" onclick="initMemory()">Reset Cards</button>
@@ -700,38 +706,65 @@ function playRPS(user) {
 
 /* ==================== 7. MEMORY MATCH ==================== */
 const mEmojis = ['🐍','⚡','💻','🎯','🔥','🚀'];
-let mCards = [], mFlipped = [], mMatched = 0;
+let mCards = [], mFlipped = [], mMatched = 0, mMoves = 0, mSeconds = 0, mClock = null, mLock = false;
 function initMemory() {
-    mMatched = 0; mFlipped = [];
-    const deck = [...mEmojis, ...mEmojis].sort(() => 0.5 - Math.random());
+    clearInterval(mClock);
+    mMatched = 0; mFlipped = []; mMoves = 0; mSeconds = 0; mLock = false;
+    document.getElementById('mem-moves').textContent = '0';
+    document.getElementById('mem-time').textContent = '0s';
+    document.getElementById('mem-pairs').textContent = '0/6';
+    document.getElementById('mem-status').textContent = 'Find all matching pairs!';
+    const deck = [...mEmojis, ...mEmojis].sort(() => Math.random() - 0.5);
     mCards = deck;
     const b = document.getElementById('mem-board');
     b.innerHTML = '';
     deck.forEach((e, idx) => {
-        const c = document.createElement('div');
+        const c = document.createElement('button');
+        c.type = 'button';
         c.className = 'mem-card';
         c.textContent = '?';
+        c.setAttribute('aria-label', 'Hidden memory card');
         c.onclick = () => flipMCard(c, idx);
         b.appendChild(c);
     });
 }
 function flipMCard(el, idx) {
-    if (mFlipped.length >= 2 || el.textContent !== '?') return;
+    if (mLock || mFlipped.length >= 2 || el.textContent !== '?') return;
+    if (mMoves === 0) {
+        mClock = setInterval(() => {
+            mSeconds++;
+            document.getElementById('mem-time').textContent = mSeconds + 's';
+        }, 1000);
+    }
     el.textContent = mCards[idx];
+    el.setAttribute('aria-label', 'Revealed memory card');
     mFlipped.push({el, idx});
     if (mFlipped.length === 2) {
+        mMoves++;
+        document.getElementById('mem-moves').textContent = mMoves;
         const [a, b] = mFlipped;
         if (mCards[a.idx] === mCards[b.idx]) {
             a.el.style.background = 'rgba(58,245,123,0.3)';
             b.el.style.background = 'rgba(58,245,123,0.3)';
+            a.el.disabled = true;
+            b.el.disabled = true;
             mMatched += 2;
+            document.getElementById('mem-pairs').textContent = (mMatched / 2) + '/6';
             mFlipped = [];
+            if (mMatched === mCards.length) {
+                clearInterval(mClock);
+                document.getElementById('mem-status').textContent = '🎉 You matched every pair in ' + mMoves + ' moves and ' + mSeconds + ' seconds!';
+            }
         } else {
+            mLock = true;
             setTimeout(() => {
                 a.el.textContent = '?';
                 b.el.textContent = '?';
+                a.el.setAttribute('aria-label', 'Hidden memory card');
+                b.el.setAttribute('aria-label', 'Hidden memory card');
                 mFlipped = [];
-            }, 500);
+                mLock = false;
+            }, 650);
         }
     }
 }
