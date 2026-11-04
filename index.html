@@ -916,7 +916,7 @@ print(f"Student: {student['name']}, Track: {student['track']}")</textarea>
     <button class="world-filter" onclick="setWorldFilter('character',this)">🧍 Character & Adventure</button>
     <button class="world-filter" onclick="setWorldFilter('skill',this)">⚡ Skill & Reaction</button>
   </div>
-  <div id="world-count" class="world-count">26 curated games</div>
+  <div id="world-count" class="world-count">29 curated games</div>
 </div>
 <div class="world-grid" id="world-game-grid">
   <a class="world-card" data-category="car" href="https://poki.com/en/g/mr-racer-car-racing" target="_blank" rel="noopener noreferrer"><span class="world-icon">🏎️</span><span class="world-name">MR RACER – Car Racing</span><span class="world-desc">Traffic racing, multiple modes and car upgrades.</span><span class="world-tag">CAR RACING</span></a>
@@ -975,7 +975,7 @@ document.querySelectorAll('.world-filter').forEach(b=>{
   const label=b.textContent;
   b.dataset.category=label.includes('Cars')?'car':label.includes('World')?'world':label.includes('Character')?'character':label.includes('Skill')?'skill':'all';
 });
-</div></section>
+</script>
 <script>
 /* ==================== 1. TAB SWITCHER ==================== */
 function switchTab(tabId) {
