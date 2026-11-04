@@ -7,7 +7,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <!-- Pyodide: In-Browser Real Python Engine -->
-<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Poppins:wght@300;400;600;700;800&display=swap');
@@ -415,6 +415,7 @@ body{
     <button class="nav-tab-btn" id="tab-games" onclick="switchTab('games')"><i class="fas fa-gamepad text-warning"></i> Mini Games</button>
     <button class="nav-tab-btn" id="tab-arcade" onclick="switchTab('arcade')"><i class="fas fa-rocket" style="color:#a78bfa"></i> Arcade Games</button>
     <button class="nav-tab-btn" id="tab-car-lab" onclick="switchTab('car-lab')"><i class="fas fa-car-side" style="color:#fb923c"></i> Car Lab</button>
+    <button class="nav-tab-btn" id="tab-metro-city" onclick="switchTab('metro-city')"><i class="fas fa-city" style="color:#34d399"></i> Metro City</button>
     
     <div class="engine-status">
         <span class="engine-dot" id="engine-dot"></span>
@@ -454,6 +455,11 @@ body{
             <div class="icon" style="color:#fb923c;"><i class="fas fa-car-side"></i></div>
             <h4>Car Lab · 10 Original Games</h4>
             <p class="text-secondary small">Open-world driving, rival races, drift, rally, parking and more.</p>
+        </div>
+        <div class="feature-card" onclick="switchTab('metro-city')">
+            <div class="icon" style="color:#34d399;"><i class="fas fa-city"></i></div>
+            <h4>Metro City Stories · Open World</h4>
+            <p class="text-secondary small">Explore an original city, drive freely, collect credits and complete delivery and checkpoint jobs.</p>
         </div>
         <div class="feature-card" onclick="switchTab('arcade')">
             <div class="icon" style="color:#a78bfa;"><i class="fas fa-earth-asia"></i></div>
@@ -952,6 +958,7 @@ print(f"Student: {student['name']}, Track: {student['track']}")</textarea>
   <a class="world-card" data-category="skill" href="https://poki.com/en/g/tunnel-rush" target="_blank" rel="noopener noreferrer"><span class="world-icon">🌈</span><span class="world-name">Tunnel Rush</span><span class="world-desc">Fast visual reactions through changing tunnels.</span><span class="world-tag">REFLEX</span></a>
 </div>
 <div class="world-footnote">Games open on their official Poki pages in a new tab. Availability and controls may vary by device and region.</div>
+</section>
 <section class="view-panel" id="view-car-lab">
   <div class="car-lab-hero"><div class="car-lab-kicker">PYLearn ORIGINAL GAME STUDIO</div><h1>🚗 Car Lab</h1><p>10 original driving games built into this website. Explore, race, drift, rally and master precision challenges.</p><div class="car-lab-pills"><span>10 Playable Modes</span><span>Keyboard + Touch</span><span>Original Gameplay</span></div></div>
   <div class="car-lab-help"><b>Controls:</b> Arrow keys / WASD to steer and accelerate · Space for brake/action · Mobile users can use the buttons on each game card. Start one game at a time for best performance.</div>
@@ -1085,10 +1092,114 @@ print(f"Student: {student['name']}, Track: {student['track']}")</textarea>
  CarLab.start=id=>{Object.values(G).forEach(g=>{g.active=false});const s=fresh(id);G[id]=s;s.active=true;if(id==="open"){s.v=3;s.x=rand(-30,30);s.y=rand(-30,30)}if(id==="park"){s.x=-150;s.y=85;s.v=2.2}s.v=s.v||3;if(id==="hard")s.v=6.5;render(s);step(s)};
  CarLab.steer=(id,d)=>{const s=G[id];if(!s||!s.active)return;if(id==="open"||id==="park"){s.angle+=d*.16;s.v=clamp(s.v+d*.25,-3,9)}else if(id==="drag"){s.gear=Math.min(6,s.gear+1);s.score+=s.v*5}else{s.x=clamp(s.x+d*34,-130,130);s.angle=d*.14;if(id==="drift")s.score+=Math.abs(d)*4}render(s)};
  CarLab.action=id=>{const s=G[id];if(!s||!s.active)return;if(id==="open"){s.v=clamp(s.v+1.5,-3,10)}else if(id==="drag"){const rpm=s.frame%90;if(rpm>35&&rpm<58){s.score+=180;s.v+=2}else{s.score=Math.max(0,s.score-45);s.v=Math.max(1,s.v-1)}}else if(id==="park"){s.v*=.45;if(Math.abs(s.x-120)<75&&Math.abs(s.angle)<.35)finish(s,"Parked! Precision score "+Math.floor(500-Math.abs(s.x-120)*2))}else{s.v=Math.max(.8,s.v*.65);s.score+=id==="drift"?25:0}render(s)};
- document.addEventListener("keydown",e=>{if(!document.getElementById("view-car-lab")?.classList.contains("active"))return;const id=Object.keys(G).find(k=>G[k].active);if(!id)return;if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")CarLab.steer(id,-1);if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")CarLab.steer(id,1);if(e.key===" "||e.key==="ArrowDown"||e.key.toLowerCase()==="s"){e.preventDefault();CarLab.action(id)}});
+ CarLab.pause=()=>{Object.values(G).forEach(g=>{g.active=false})};
+ document.addEventListener("keydown",e=>{if(!document.getElementById("view-car-lab")?.classList.contains("active")||e.target?.closest("input,textarea,select,[contenteditable=true],[role=textbox]"))return;const id=Object.keys(G).find(k=>G[k].active);if(!id)return;const k=e.key.toLowerCase();if(e.key==="ArrowLeft"||k==="a"){e.preventDefault();CarLab.steer(id,-1)}if(e.key==="ArrowRight"||k==="d"){e.preventDefault();CarLab.steer(id,1)}if(e.key===" "||e.key==="ArrowDown"||k==="s"){e.preventDefault();CarLab.action(id)}if(e.key==="ArrowUp"||k==="w"){e.preventDefault();if(id==="open")CarLab.action(id)}});
  window.CarLab=CarLab;
 })();
 </script></section>
+
+<section class="view-panel" id="view-metro-city">
+  <div class="metro-hero"><div class="metro-kicker">PYLearn ORIGINAL OPEN-WORLD GAME</div><h1>🏙️ Metro City Stories</h1><p>An original top-down city sandbox. Drive your own car, explore a large connected map, collect credits and take on delivery or checkpoint jobs.</p><div class="metro-chips"><span>Open City Map</span><span>Free Roam</span><span>City Jobs</span><span>Keyboard + Touch</span></div></div>
+  <div class="metro-layout">
+    <div class="metro-game-shell">
+      <canvas id="metro-canvas" width="960" height="540" tabindex="0" aria-label="Metro City Stories open-world driving game"></canvas>
+      <div class="metro-hud"><span id="metro-speed">SPEED 0</span><span id="metro-cash">CREDITS 0</span><span id="metro-job">FREE ROAM</span></div>
+      <div class="metro-toolbar"><button onclick="MetroGame.startFree()">▶ Start / Free Roam</button><button onclick="MetroGame.startJob('delivery')">📦 Delivery Job</button><button onclick="MetroGame.startJob('sprint')">🏁 City Sprint</button><button onclick="MetroGame.reset()">↻ Reset City</button></div>
+      <div class="metro-touch">
+        <div class="metro-touch-steer">
+          <button onpointerdown="MetroGame.control('a',true)" onpointerup="MetroGame.control('a',false)" onpointerleave="MetroGame.control('a',false)" onpointercancel="MetroGame.control('a',false)">◀</button>
+          <button onpointerdown="MetroGame.control('d',true)" onpointerup="MetroGame.control('d',false)" onpointerleave="MetroGame.control('d',false)" onpointercancel="MetroGame.control('d',false)">▶</button>
+        </div>
+        <div class="metro-touch-drive">
+          <button onpointerdown="MetroGame.control('w',true)" onpointerup="MetroGame.control('w',false)" onpointerleave="MetroGame.control('w',false)" onpointercancel="MetroGame.control('w',false)">▲ Accelerate</button>
+          <button onpointerdown="MetroGame.control('s',true)" onpointerup="MetroGame.control('s',false)" onpointerleave="MetroGame.control('s',false)" onpointercancel="MetroGame.control('s',false)">▼ Brake</button>
+          <button onclick="MetroGame.interact()">E · Interact</button>
+        </div>
+      </div>
+      <p id="metro-message" class="metro-message">Press Start / Free Roam. Use WASD or arrow keys to drive.</p>
+    </div>
+    <aside class="metro-side"><h3>How to play</h3><p><b>W / ↑</b> accelerate · <b>S / ↓</b> brake or reverse · <b>A / ←</b> steer left · <b>D / →</b> steer right.</p><p><b>E</b> or <b>Enter</b> completes a delivery when you reach the glowing destination.</p><div class="metro-stat"><span>City size</span><b>2,880 × 2,160</b></div><div class="metro-stat"><span>Credits earned</span><b id="metro-earned">0</b></div><div class="metro-stat"><span>Packages / checkpoints</span><b id="metro-completed">0</b></div><div class="metro-note">This is an original 2D open-world driving game—not a copy of GTA 6. The city, missions and artwork are made for PyLearn Hub.</div></aside>
+  </div>
+</section>
+<style>
+.metro-hero{max-width:1280px;margin:22px auto 14px;padding:28px 24px;border-radius:22px;background:radial-gradient(circle at 80% 12%,#10b98140,transparent 34%),linear-gradient(125deg,#0f2431,#153b3c 55%,#18314d);border:1px solid #34d39955}
+.metro-kicker{font-size:.68rem;letter-spacing:.19em;color:#6ee7b7;font-weight:900}.metro-hero h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff;margin:8px 0}.metro-hero p{max-width:780px;color:#cbd5e1}.metro-chips{display:flex;gap:8px;flex-wrap:wrap}.metro-chips span{padding:6px 11px;border:1px solid #ffffff2c;background:#ffffff12;border-radius:999px;font-size:.75rem;color:#d1fae5}
+.metro-layout{max-width:1280px;margin:0 auto 40px;padding:0 16px;display:grid;grid-template-columns:minmax(0,1fr) 265px;gap:16px;align-items:start}.metro-game-shell,.metro-side{min-width:0;background:#101b2d;border:1px solid #ffffff1c;border-radius:18px;padding:14px}.metro-game-shell canvas{width:100%;height:auto;display:block;aspect-ratio:16/9;object-fit:contain;background:#172a32;border-radius:12px;outline:none;touch-action:none}.metro-hud{display:flex;justify-content:space-between;gap:8px;padding:9px 2px;color:#a7f3d0;font:800 .74rem 'Fira Code',monospace;flex-wrap:wrap}.metro-toolbar{display:flex;gap:8px;flex-wrap:wrap}.metro-toolbar button,.metro-touch button{border:1px solid #34d39955;background:#1c3540;color:#ecfdf5;border-radius:9px;padding:9px 12px;font-size:.78rem;font-weight:800}.metro-toolbar button:first-child{background:#047857}.metro-touch{display:flex;justify-content:space-between;gap:12px;margin-top:12px}.metro-touch-steer,.metro-touch-drive{display:flex;gap:7px}.metro-touch button{min-width:48px;touch-action:none;user-select:none}.metro-message{font-size:.8rem;color:#a7f3d0;margin:10px 2px 2px;min-height:22px}.metro-side h3{font-size:1rem;color:#d1fae5}.metro-side p{font-size:.8rem;color:#b8c7d7;line-height:1.55}.metro-stat{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #ffffff16;padding:10px 0;font-size:.75rem;color:#9fb0c9}.metro-stat b{color:#e2e8f0;text-align:right}.metro-note{padding:12px;border-radius:11px;background:#12372f;color:#a7f3d0;font-size:.72rem;line-height:1.5;margin-top:10px}
+@media(max-width:850px){.metro-layout{grid-template-columns:1fr}.metro-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metro-side h3,.metro-note{grid-column:1/-1}.metro-side p{margin:0}}@media(max-width:520px){.metro-hero{margin:12px 8px;padding:20px 15px}.metro-layout{padding:0 8px}.metro-game-shell{padding:8px}.metro-toolbar button{flex:1 1 44%;padding:8px 5px;font-size:.7rem}.metro-touch{flex-direction:column}.metro-touch-steer,.metro-touch-drive{justify-content:space-between}.metro-touch-drive button{flex:1}.metro-side{grid-template-columns:1fr}.metro-side h3,.metro-note{grid-column:auto}}
+</style>
+<script>
+(function(){
+  const canvas=document.getElementById('metro-canvas'),ctx=canvas.getContext('2d');
+  const W=2880,H=2160,CELL=360,ROAD=96;
+  const keys={w:false,a:false,s:false,d:false},player={x:48,y:48,angle:0,speed:0},camera={x:0,y:0};
+  const buildings=[],coins=[],parks=[],traffic=[];
+  const targets=[{x:768,y:48},{x:1128,y:768},{x:1848,y:408},{x:2280,y:1128},{x:408,y:1488},{x:1488,y:1848},{x:2640,y:768},{x:768,y:1848}];
+  let running=false,raf=0,last=0,cash=0,completed=0,job='free',route=[],routeIndex=0,carColor='#38bdf8',maxSpeed=6.2,handle=.047,frame=0;
+  function rng(seed){let x=seed>>>0;return()=>{x=(x*1664525+1013904223)>>>0;return x/4294967296;};}
+  const random=rng(2405);
+  for(let row=0;row<6;row++)for(let col=0;col<8;col++){
+    const bx=col*CELL+ROAD+12,by=row*CELL+ROAD+12,spots=[[0,0],[122,0],[0,122],[122,122]];
+    spots.forEach((p,i)=>buildings.push({x:bx+p[0],y:by+p[1],w:88+random()*22,h:88+random()*22,hue:190+Math.floor(random()*100),name:['Apartments','Office','Cafe','Mall'][i]}));
+    if((row+col)%4===0)parks.push({x:col*CELL+ROAD+5,y:row*CELL+ROAD+5,w:246,h:246});
+  }
+  for(let i=0;i<58;i++){const t=targets[i%targets.length];coins.push({x:t.x+(random()-.5)*48,y:t.y+(random()-.5)*48,got:false});}
+  for(let i=0;i<18;i++){const vertical=i%2===0;traffic.push({x:vertical?(Math.floor(random()*8)*CELL+48):(random()*W),y:vertical?(random()*H):(Math.floor(random()*6)*CELL+48),vertical,dir:random()>.5?1:-1,color:['#f59e0b','#a78bfa','#f472b6','#e2e8f0'][i%4]});}
+  function rectHit(x,y){return buildings.some(b=>x>b.x-13&&x<b.x+b.w+13&&y>b.y-13&&y<b.y+b.h+13);}
+  function update(dt){
+    frame+=dt;const ox=player.x,oy=player.y;
+    if(keys.w)player.speed=Math.min(maxSpeed,player.speed+.18*dt);
+    if(keys.s)player.speed=Math.max(-2.5,player.speed-.2*dt);
+    if(!keys.w&&!keys.s)player.speed*=Math.pow(.986,dt);
+    if(Math.abs(player.speed)<.025)player.speed=0;
+    const steer=(keys.a?-1:0)+(keys.d?1:0);
+    if(steer)player.angle+=steer*handle*Math.max(.35,Math.abs(player.speed)/3)*dt*(player.speed<0?-1:1);
+    player.x=Math.max(18,Math.min(W-18,player.x+Math.cos(player.angle)*player.speed*dt));
+    player.y=Math.max(18,Math.min(H-18,player.y+Math.sin(player.angle)*player.speed*dt));
+    if(rectHit(player.x,player.y)){player.x=ox;player.y=oy;player.speed*=-.18;document.getElementById('metro-message').textContent='Building boundary — stay on the streets.';}
+    coins.forEach(c=>{if(!c.got&&Math.hypot(c.x-player.x,c.y-player.y)<24){c.got=true;cash+=10;document.getElementById('metro-cash').textContent='CREDITS '+cash;document.getElementById('metro-earned').textContent=cash;}});
+    traffic.forEach(t=>{if(t.vertical)t.y+=t.dir*1.2*dt;else t.x+=t.dir*1.2*dt;if(t.vertical){if(t.y<0)t.y=H;if(t.y>H)t.y=0;}else{if(t.x<0)t.x=W;if(t.x>W)t.x=0;}});
+    if(route.length){const goal=route[routeIndex];if(job==='delivery'){if(Math.hypot(goal.x-player.x,goal.y-player.y)<40)document.getElementById('metro-message').textContent='At the delivery point — press E to complete the job.';}
+      else if(Math.hypot(goal.x-player.x,goal.y-player.y)<40){routeIndex++;if(routeIndex>=route.length){document.getElementById('metro-message').textContent='City Sprint complete! +400 credits.';cash+=400;completed++;route=[];}else document.getElementById('metro-message').textContent='Checkpoint '+(routeIndex+1)+' / '+route.length+' reached — keep driving!';}}
+    document.getElementById('metro-speed').textContent='SPEED '+Math.round(Math.abs(player.speed)*18);
+    document.getElementById('metro-job').textContent=job==='free'?'FREE ROAM':job.toUpperCase()+' '+(route.length?Math.min(routeIndex+1,route.length)+'/'+route.length:'DONE');
+    document.getElementById('metro-cash').textContent='CREDITS '+cash;document.getElementById('metro-earned').textContent=cash;document.getElementById('metro-completed').textContent=completed;
+  }
+  function drawCar(x,y,angle,color,scale=1){ctx.save();ctx.translate(x-camera.x,y-camera.y);ctx.rotate(angle);ctx.scale(scale,scale);ctx.fillStyle='#050914';ctx.fillRect(-16,-11,34,24);ctx.fillStyle=color;ctx.fillRect(-15,-10,30,20);ctx.fillStyle='#bde9f5';ctx.fillRect(-3,-7,10,14);ctx.fillStyle='#fef3c7';ctx.fillRect(12,-7,3,4);ctx.fillRect(12,3,3,4);ctx.restore();}
+  function drawBuilding(b){const x=b.x-camera.x,y=b.y-camera.y;if(x+b.w<0||y+b.h<0||x>canvas.width||y>canvas.height)return;ctx.fillStyle='#070e17';ctx.fillRect(x+7,y+9,b.w,b.h);ctx.fillStyle='hsl('+b.hue+' 18% 27%)';ctx.fillRect(x,y,b.w,b.h);ctx.fillStyle='hsl('+b.hue+' 22% 42%)';ctx.fillRect(x+5,y+5,b.w-10,9);ctx.fillStyle='#8bd5c5';for(let wy=y+20;wy<y+b.h-12;wy+=25)for(let wx=x+12;wx<x+b.w-10;wx+=25)ctx.fillRect(wx,wy,10,8);ctx.fillStyle='#dbeafe';ctx.font='bold 9px system-ui';ctx.fillText(b.name,x+8,y+b.h-8);}
+  function draw(){
+    camera.x=Math.max(0,Math.min(W-canvas.width,player.x-canvas.width/2));camera.y=Math.max(0,Math.min(H-canvas.height,player.y-canvas.height/2));
+    ctx.fillStyle='#1d493e';ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.save();ctx.translate(-camera.x,-camera.y);
+    parks.forEach(p=>{ctx.fillStyle='#25634e';ctx.fillRect(p.x,p.y,p.w,p.h);ctx.fillStyle='#3c805e';for(let i=0;i<7;i++){ctx.beginPath();ctx.arc(p.x+20+(i*37)%p.w,p.y+30+(i*53)%p.h,9,0,Math.PI*2);ctx.fill();}});
+    ctx.fillStyle='#394657';for(let x=0;x<W;x+=CELL)ctx.fillRect(x,0,ROAD,H);for(let y=0;y<H;y+=CELL)ctx.fillRect(0,y,W,ROAD);
+    ctx.strokeStyle='#dbe4ec77';ctx.lineWidth=2;ctx.setLineDash([24,22]);for(let x=ROAD/2;x<W;x+=CELL){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=ROAD/2;y<H;y+=CELL){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}ctx.setLineDash([]);
+    buildings.forEach(drawBuilding);
+    coins.forEach(c=>{if(c.got)return;ctx.fillStyle='#facc15';ctx.beginPath();ctx.arc(c.x,c.y,7,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff4b0';ctx.stroke();});
+    traffic.forEach(t=>drawCar(t.x,t.y,t.vertical?Math.PI/2:0,t.color,.85));
+    if(route.length){const g=route[routeIndex];ctx.strokeStyle='#a7f3d0';ctx.lineWidth=4;ctx.beginPath();ctx.arc(g.x,g.y,25+Math.sin(frame/8)*5,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#a7f3d0';ctx.font='bold 13px system-ui';ctx.fillText(job==='delivery'?'DELIVERY':'CHECKPOINT '+(routeIndex+1),g.x-40,g.y-34);}
+    ctx.restore();drawCar(canvas.width/2,canvas.height/2,player.angle,carColor,1.25);
+    ctx.fillStyle='#e2e8f0';ctx.font='bold 13px system-ui';ctx.fillText('METRO CITY  •  '+Math.round(player.x)+', '+Math.round(player.y),16,24);
+    ctx.fillStyle='#10202a';ctx.fillRect(canvas.width-150,14,132,94);ctx.strokeStyle='#94a3b8';ctx.strokeRect(canvas.width-150,14,132,94);
+    ctx.fillStyle='#647b84';for(let x=canvas.width-146;x<canvas.width-16;x+=17)ctx.fillRect(x,18,5,86);
+    ctx.fillStyle='#a7f3d0';ctx.fillRect(canvas.width-150+(player.x/W)*132-2,14+(player.y/H)*94-2,5,5);
+  }
+  function loop(now){if(!running||!document.getElementById('view-metro-city').classList.contains('active')){running=false;return;}const dt=Math.min(2,(now-last)/16.67||1);last=now;update(dt);draw();raf=requestAnimationFrame(loop);}
+  function start(){if(!running){running=true;last=performance.now();raf=requestAnimationFrame(loop);}draw();canvas.focus();}
+  function startFree(){job='free';route=[];document.getElementById('metro-message').textContent='Free roam active. Collect gold credits around the city.';start();}
+  function startJob(type){job=type;routeIndex=0;const first=(Math.floor(player.x/CELL)+Math.floor(player.y/CELL))%targets.length;route=type==='delivery'?[targets[(first+2)%targets.length]]:[targets[(first+1)%targets.length],targets[(first+3)%targets.length],targets[(first+5)%targets.length]];document.getElementById('metro-message').textContent=type==='delivery'?'Drive to the glowing delivery point and press E.':'Reach the three glowing checkpoints in order.';start();}
+  function interact(){if(job==='delivery'&&route.length&&Math.hypot(route[0].x-player.x,route[0].y-player.y)<85){cash+=250;completed++;route=[];document.getElementById('metro-message').textContent='Package delivered! +250 credits. Great route!';}else if(job==='delivery'&&route.length)document.getElementById('metro-message').textContent='Get closer to the glowing delivery marker first.';}
+  function control(k,on){keys[k]=on;}
+  function reset(){running=false;cancelAnimationFrame(raf);player.x=48;player.y=48;player.angle=0;player.speed=0;route=[];job='free';document.getElementById('metro-message').textContent='City reset. Start a mode to begin driving.';draw();}
+  function onShow(){draw();}
+  function onHide(){running=false;cancelAnimationFrame(raf);Object.keys(keys).forEach(k=>keys[k]=false);}
+  document.addEventListener('keydown',e=>{if(!document.getElementById('view-metro-city').classList.contains('active')||e.target?.closest('input,textarea,select,[contenteditable=true],[role=textbox]'))return;const k=e.key.toLowerCase(),map={arrowup:'w',arrowleft:'a',arrowdown:'s',arrowright:'d',w:'w',a:'a',s:'s',d:'d'};if(map[k]){keys[map[k]]=true;e.preventDefault();}if(k==='e'||k==='enter'){interact();e.preventDefault();}});
+  document.addEventListener('keyup',e=>{const k=e.key.toLowerCase(),map={arrowup:'w',arrowleft:'a',arrowdown:'s',arrowright:'d',w:'w',a:'a',s:'s',d:'d'};if(map[k])keys[map[k]]=false;});
+  window.addEventListener('blur',()=>Object.keys(keys).forEach(k=>keys[k]=false));
+  window.MetroGame={start,startFree,startJob,interact,control,reset,onShow,onHide};
+  draw();
+})();
+</script>
+
 <script>
 function filterWorldGames(){
   const q=(document.getElementById('world-search').value||'').toLowerCase();
@@ -1115,77 +1226,120 @@ document.querySelectorAll('.world-filter').forEach(b=>{
 });
 </script>
 <script>
-/* ==================== 1. TAB SWITCHER ==================== */
+/* ==================== 1. SECTION SWITCHER + LAZY SECTION STARTUP ==================== */
 function switchTab(tabId) {
+    const nextView = document.getElementById('view-' + tabId);
+    if (!nextView) return;
+    window.AR?.deactivate?.();
+    window.CarLab?.pause?.();
+    window.MetroGame?.onHide?.();
     document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('view-' + tabId).classList.add('active');
+    nextView.classList.add('active');
     const b = document.getElementById('tab-' + tabId);
     if (b) b.classList.add('active');
-}
-
-/* ==================== 2. IN-BROWSER PYODIDE PYTHON ENGINE ==================== */
-let pyodide = null;
-async function initPyodideEngine() {
-    try {
-        pyodide = await loadPyodide();
-        document.getElementById('engine-dot').classList.add('ready');
-        document.getElementById('engine-text').textContent = "Python 3.11 Ready";
-        runLiveCode();
-    } catch(err) {
-        document.getElementById('engine-text').textContent = "Engine Offline (Fallback ready)";
+    if (tabId === 'quiz' && !quizGridInitialized) { initQuizGrid(); quizGridInitialized = true; }
+    if (tabId === 'games') { initBasicMiniGames(); window.initMiniGamesSuite?.(); }
+    if (tabId === 'editor' || tabId === 'script') {
+        const label=document.getElementById('engine-text');
+        if(label && !pythonEnginePromise) label.textContent='Loading Python Engine...';
+        initPyodideEngine().then(()=>{if(tabId==='editor')runLiveCode();}).catch(()=>{});
     }
+    if (tabId === 'metro-city') window.MetroGame?.onShow?.();
 }
-initPyodideEngine();
 
-async function executePythonCode(code) {
-    if (!pyodide) return "Python Engine is still initializing...";
-    try {
-        pyodide.runPython(`
-import sys
-import io
-sys.stdout = io.StringIO()
-sys.stderr = io.StringIO()
-`);
-        await pyodide.runPythonAsync(code);
-        const stdout = pyodide.runPython("sys.stdout.getvalue()");
-        const stderr = pyodide.runPython("sys.stderr.getvalue()");
-        return stdout || stderr || "Program completed with 0 output.";
-    } catch (e) {
-        return e.toString();
+/* ==================== 2. ON-DEMAND PYTHON ENGINE (WORKER-FIRST) ==================== */
+const PYODIDE_URL='https://cdn.jsdelivr.net/pyodide/v0.25.0/full/';
+let pyodide=null,pythonWorker=null,pythonEnginePromise=null;
+let pythonPending=new Map(),pythonRequestId=0,pythonFallbackQueue=Promise.resolve();
+function setEngineReady(){
+    document.getElementById('engine-dot')?.classList.add('ready');
+    document.getElementById('engine-text').textContent='Python 3.11 Ready';
+}
+function loadMainThreadPyodide(){
+    if(typeof window.loadPyodide==='function') return window.loadPyodide({indexURL:PYODIDE_URL});
+    return new Promise((resolve,reject)=>{
+        const script=document.createElement('script');
+        script.src=PYODIDE_URL+'pyodide.js';script.async=true;
+        script.onload=()=>window.loadPyodide({indexURL:PYODIDE_URL}).then(resolve,reject);
+        script.onerror=()=>reject(new Error('Could not download the Python engine.'));
+        document.head.appendChild(script);
+    });
+}
+async function initPyodideEngine(){
+    if(pythonEnginePromise)return pythonEnginePromise;
+    pythonEnginePromise=(async()=>{
+        try{
+            const workerCode=[
+                "let runtime=null;let queue=Promise.resolve();",
+                "self.onmessage=(event)=>{const data=event.data||{};",
+                "if(data.type==='init'){importScripts('https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js');",
+                "loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/'}).then(value=>{runtime=value;postMessage({type:'ready'});}).catch(error=>postMessage({type:'init-error',error:String(error)}));return;}",
+                "if(data.type==='run'){queue=queue.then(async()=>{try{runtime.runPython('import sys,io;sys.stdout=io.StringIO();sys.stderr=io.StringIO()');",
+                "await runtime.runPythonAsync(data.code);const out=runtime.runPython('sys.stdout.getvalue()');",
+                "const err=runtime.runPython('sys.stderr.getvalue()');postMessage({type:'result',id:data.id,output:out||err||'Program completed with 0 output.'});",
+                "}catch(error){postMessage({type:'result',id:data.id,output:String(error)});}});}};"
+            ].join('\n');
+            const blobUrl=URL.createObjectURL(new Blob([workerCode],{type:'text/javascript'}));
+            pythonWorker=new Worker(blobUrl);URL.revokeObjectURL(blobUrl);
+            await new Promise((resolve,reject)=>{
+                const timeout=setTimeout(()=>reject(new Error('Python worker startup timed out.')),45000);
+                pythonWorker.onmessage=event=>{
+                    const data=event.data||{};
+                    if(data.type==='ready'){clearTimeout(timeout);resolve();}
+                    else if(data.type==='init-error'){clearTimeout(timeout);reject(new Error(data.error));}
+                    else if(data.type==='result'){const done=pythonPending.get(data.id);if(done){pythonPending.delete(data.id);done(data.output);}}
+                };
+                pythonWorker.onerror=event=>{clearTimeout(timeout);reject(new Error(event.message||'Python worker failed.'));};
+                pythonWorker.postMessage({type:'init'});
+            });
+            setEngineReady();return 'worker';
+        }catch(workerError){
+            try{pythonWorker?.terminate();}catch(_){}
+            pythonWorker=null;
+            pyodide=await loadMainThreadPyodide();
+            setEngineReady();return 'main';
+        }
+    })();
+    try{return await pythonEnginePromise;}
+    catch(error){pythonEnginePromise=null;document.getElementById('engine-text').textContent='Python Engine Offline';throw error;}
+}
+async function executePythonCode(code){
+    const mode=await initPyodideEngine();
+    if(mode==='worker'){
+        const id=++pythonRequestId;
+        return new Promise(resolve=>{pythonPending.set(id,resolve);pythonWorker.postMessage({type:'run',id,code});});
     }
+    const execute=async()=>{
+        try{pyodide.runPython('import sys,io;sys.stdout=io.StringIO();sys.stderr=io.StringIO()');await pyodide.runPythonAsync(code);
+            const out=pyodide.runPython('sys.stdout.getvalue()'),err=pyodide.runPython('sys.stderr.getvalue()');
+            return out||err||'Program completed with 0 output.';
+        }catch(error){return String(error);}
+    };
+    const result=pythonFallbackQueue.then(execute);pythonFallbackQueue=result.catch(()=>{});return result;
 }
-
-let liveTimer = null;
-const liveInput = document.getElementById('live-py-code');
-const liveOutput = document.getElementById('live-py-output');
-
-async function runLiveCode() {
-    if (!pyodide) return;
-    const code = liveInput.value.trim();
-    if (!code) { liveOutput.textContent = "Write some code..."; return; }
-    document.getElementById('live-status').textContent = "Executing...";
-    const res = await executePythonCode(code);
-    liveOutput.textContent = res;
-    document.getElementById('live-status').textContent = "Updated";
+let liveTimer=null,liveRunVersion=0;
+const liveInput=document.getElementById('live-py-code'),liveOutput=document.getElementById('live-py-output');
+async function runLiveCode(){
+    if(!liveInput||!document.getElementById('view-editor')?.classList.contains('active'))return;
+    const version=++liveRunVersion,code=liveInput.value;
+    if(!code.trim()){liveOutput.textContent='Write some code...';return;}
+    document.getElementById('live-status').textContent='Executing in Python worker...';
+    const result=await executePythonCode(code);
+    if(version!==liveRunVersion)return;
+    liveOutput.textContent=result;document.getElementById('live-status').textContent='Updated';
 }
-
-liveInput.addEventListener('input', () => {
-    clearTimeout(liveTimer);
-    document.getElementById('live-status').textContent = "Typing...";
-    liveTimer = setTimeout(runLiveCode, 400);
+liveInput.addEventListener('input',()=>{
+    clearTimeout(liveTimer);liveRunVersion++;
+    document.getElementById('live-status').textContent='Typing...';
+    liveTimer=setTimeout(runLiveCode,650);
 });
-
-async function runScript() {
-    const code = document.getElementById('script-py-code').value.trim();
-    const out = document.getElementById('script-py-output');
-    out.textContent = "Executing script in browser...";
-    const res = await executePythonCode(code);
-    out.textContent = res;
+async function runScript(){
+    const code=document.getElementById('script-py-code').value,out=document.getElementById('script-py-output');
+    out.textContent='Executing script in Python worker...';
+    try{out.textContent=await executePythonCode(code);}catch(error){out.textContent='Python engine error: '+String(error);}
 }
-function clearScriptOutput() {
-    document.getElementById('script-py-output').textContent = "Console cleared.";
-}
+function clearScriptOutput(){document.getElementById('script-py-output').textContent='Console cleared.';}
 
 /* ==================== 3. 30 QUIZ LEVELS ==================== */
 const quizBank = [
@@ -1216,7 +1370,7 @@ function initQuizGrid() {
         g.appendChild(b);
     }
 }
-initQuizGrid();
+let quizGridInitialized = false;
 
 function startQuizLevel(lvl) {
     curLevel = lvl;
@@ -1332,7 +1486,7 @@ function submitWordGuess() {
         document.getElementById('g-wg-msg').className = "small fw-bold text-danger";
     }
 }
-initWordGuess();
+const initPrimaryWordGuess = initWordGuess;
 
 /* ==================== 5. SNAKE GAME ==================== */
 const sCanvas = document.getElementById('snake-canvas');
@@ -1376,7 +1530,7 @@ function updateSnake() {
     sCtx.fillStyle = '#3af57b';
     snake.forEach(seg => sCtx.fillRect(seg.x*sGrid+1, seg.y*sGrid+1, sGrid-2, sGrid-2));
 }
-startSnake();
+/* Snake starts only after its Start button is pressed. */
 
 /* ==================== 6. TIC TAC TOE ==================== */
 let tttState = Array(9).fill('');
@@ -1409,7 +1563,9 @@ function renderTTT() {
         c.style.color = tttState[idx]==='X'?'#00d2ff':'#ff5050';
     });
 }
-initTTT();
+const initPrimaryTTT = initTTT;
+let basicMiniGamesInitialized = false;
+function initBasicMiniGames(){if(basicMiniGamesInitialized)return;basicMiniGamesInitialized=true;initPrimaryWordGuess();initPrimaryTTT();}
 
 /* ==================== 7. NUMBER GUESSER ==================== */
 let secNum = Math.floor(Math.random()*100)+1;
@@ -1421,27 +1577,21 @@ function checkNumberGuess() {
     else { m.textContent = "📉 Lower!"; m.className = "text-warning"; }
 }
 
-/* Background Python Matrix Animation */
+/* Static matrix texture: no permanent timer or animation loop. */
 (function() {
     const canvas = document.getElementById('code-matrix-bg');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = Math.min(window.innerWidth, 1600);
+    canvas.height = Math.min(window.innerHeight, 1000);
     const kw = ["def", "import", "class", "return", "for", "while", "lambda", "print()", "len()", "True", "False"];
-    const cols = Math.floor(canvas.width / 50);
-    const drops = Array(cols).fill(0);
-    setInterval(() => {
-        ctx.fillStyle = 'rgba(10, 12, 22, 0.2)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = "14px 'Fira Code', monospace";
-        for (let i = 0; i < drops.length; i++) {
-            ctx.fillStyle = i % 2 === 0 ? '#00d2ff' : '#ffd438';
-            ctx.fillText(kw[Math.floor(Math.random() * kw.length)], i * 50, drops[i] * 16);
-            if (drops[i] * 16 > canvas.height && Math.random() > 0.97) drops[i] = 0;
-            drops[i]++;
+    ctx.font = "14px 'Fira Code', monospace";
+    for (let x = 0; x < canvas.width; x += 50) {
+        for (let y = (x % 90); y < canvas.height; y += 190) {
+            ctx.fillStyle = x % 2 === 0 ? '#00d2ff' : '#ffd438';
+            ctx.fillText(kw[((x / 50 + y / 190) | 0) % kw.length], x, y);
         }
-    }, 50);
+    }
 })();
 </script>
 <script>
@@ -1603,10 +1753,13 @@ function changeSnakeDir(x, y) {
 }
 
 window.addEventListener('keydown', e => {
+    if (!document.getElementById('view-games')?.classList.contains('active') ||
+        e.target?.closest('input,textarea,select,[contenteditable=true],[role=textbox]') ||
+        !sInterval) return;
     if (['ArrowUp','KeyW'].includes(e.code)) { changeSnakeDir(0, -1); e.preventDefault(); }
-    if (['ArrowDown','KeyS'].includes(e.code)) { changeSnakeDir(0, 1); e.preventDefault(); }
-    if (['ArrowLeft','KeyA'].includes(e.code)) { changeSnakeDir(-1, 0); e.preventDefault(); }
-    if (['ArrowRight','KeyD'].includes(e.code)) { changeSnakeDir(1, 0); e.preventDefault(); }
+    else if (['ArrowDown','KeyS'].includes(e.code)) { changeSnakeDir(0, 1); e.preventDefault(); }
+    else if (['ArrowLeft','KeyA'].includes(e.code)) { changeSnakeDir(-1, 0); e.preventDefault(); }
+    else if (['ArrowRight','KeyD'].includes(e.code)) { changeSnakeDir(1, 0); e.preventDefault(); }
 });
 
 function updateSnake() {
@@ -2052,7 +2205,13 @@ function init2048(){board2048=Array.from({length:4},()=>Array(4).fill(0));score2
 function spawn2048(){const e=[];board2048.forEach((r,y)=>r.forEach((v,x)=>{if(!v)e.push([y,x]);}));if(e.length){const [y,x]=e[Math.floor(Math.random()*e.length)];board2048[y][x]=Math.random()<.9?2:4;}}
 function draw2048(){const el=document.getElementById('g2048-board');el.innerHTML='';board2048.flat().forEach(v=>{const d=document.createElement('div');d.className='tile2048';d.textContent=v||'';d.style.background=v?'hsl('+((Math.log2(v)*29)%360)+',55%,38%)':'rgba(255,255,255,.06)';el.appendChild(d);});document.getElementById('g2048-score').textContent='Score: '+score2048;}
 function move2048(dir){const before=JSON.stringify(board2048);for(let i=0;i<4;i++){let line=dir==='left'||dir==='right'?board2048[i].slice():board2048.map(r=>r[i]);if(dir==='right'||dir==='down')line.reverse();line=line.filter(Boolean);for(let j=0;j<line.length-1;j++)if(line[j]===line[j+1]){line[j]*=2;score2048+=line[j];line.splice(j+1,1);}while(line.length<4)line.push(0);if(dir==='right'||dir==='down')line.reverse();if(dir==='left'||dir==='right')board2048[i]=line;else line.forEach((v,k)=>board2048[k][i]=v);}if(before!==JSON.stringify(board2048))spawn2048();draw2048();if(board2048.flat().includes(2048))document.getElementById('g2048-score').textContent='🎉 2048 reached! Score: '+score2048;}
-document.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)&&document.getElementById('game-2048')){move2048(({ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'})[e.key]);}});
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('view-games')?.classList.contains('active') ||
+     e.target?.closest('input,textarea,select,[contenteditable=true],[role=textbox]') ||
+     !['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) return;
+  e.preventDefault();
+  move2048(({ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'})[e.key]);
+});
 
 /* ==================== 15. WHACK A MOLE ==================== */
 let moleTimer=null,moleTick=null,moleScore=0,moleLeft=20,moleActive=false;
@@ -2147,8 +2306,14 @@ function drawMaze(){const el=document.getElementById('maze-board');el.innerHTML=
 function initMaze(){mazeX=0;mazeY=0;drawMaze();document.getElementById('maze-status').textContent='Find the exit!';}
 function moveMaze(dx,dy){const x=mazeX+dx,y=mazeY+dy;if(y<0||y>=mazeMap.length||x<0||x>=mazeMap[0].length||mazeMap[y][x]==='#')return;mazeX=x;mazeY=y;drawMaze();if(mazeMap[y][x]==='E')document.getElementById('maze-status').textContent='🎉 Maze completed!';}
 
-/* Initialise the 20 additional games */
-simonStart();init2048();drawMoles();initConnect();initLights();nextColor();nextPrime();newPalindrome();drawFizz();nextBinary();nextOutput();nextAnagram();resetHL();nextOdd();nextPattern();nextEstimate();initMaze();
+/* Build the additional mini-games on first visit, not during initial page load. */
+let miniGamesSuiteInitialized = false;
+function initMiniGamesSuite(){
+  if(miniGamesSuiteInitialized) return;
+  miniGamesSuiteInitialized = true;
+  simonStart();init2048();drawMoles();initConnect();initLights();nextColor();nextPrime();newPalindrome();drawFizz();nextBinary();nextOutput();nextAnagram();resetHL();nextOdd();nextPattern();nextEstimate();initMaze();
+}
+window.initMiniGamesSuite = initMiniGamesSuite;
 
 
 window.submitWordGuess = submitWordGuess;
@@ -2226,8 +2391,17 @@ function hl(){if(!hop.on)return;hop.x=(hop.x+420)%420;hop.vy+=.28;let old=hop.y;
 AR.hopStart=()=>{cancelAnimationFrame(hf);hop={on:true,x:200,y:150,vy:-6,ps:Array.from({length:8},(_,i)=>({x:(i*61+35)%350,y:185-i*24,w:75})),score:0};hd();hl();$('ar-hop-status').textContent='Keep hopping!'};AR.hopMove=d=>{if(hop){hop.x=(hop.x+d*20+420)%420;hd()}};AR.hopJump=()=>{if(hop?.on&&hop.vy===0)hop.vy=-7};
 let state='idle',timer,start=0;AR.reflexStart=()=>{clearTimeout(timer);state='wait';$('ar-reflex-pad').style.background='#b45309';$('ar-reflex-pad').textContent='WAIT...';$('ar-reflex-status').textContent='Wait for green — do not tap early!';timer=setTimeout(()=>{if(state==='wait'){state='go';start=performance.now();$('ar-reflex-pad').style.background='#15803d';$('ar-reflex-pad').textContent='TAP NOW!'}},1200+Math.random()*2800)};
 AR.reflexTap=()=>{if(state==='wait'){clearTimeout(timer);state='idle';$('ar-reflex-pad').style.background='#b91c1c';$('ar-reflex-pad').textContent='TOO SOON';$('ar-reflex-status').textContent='Too early! Try again.'}else if(state==='go'){let ms=Math.round(performance.now()-start);state='done';$('ar-reflex-pad').style.background='#26334d';$('ar-reflex-pad').textContent=ms+' ms';$('ar-reflex-status').textContent='Reaction time: '+ms+' ms'}else AR.reflexStart()};
-document.addEventListener('keydown',e=>{if(!$('view-arcade').classList.contains('active'))return;if(e.key==='ArrowLeft'){AR.runnerMove(-1);AR.roadMove(-1);AR.hopMove(-1)}if(e.key==='ArrowRight'){AR.runnerMove(1);AR.roadMove(1);AR.hopMove(1)}if(e.key==='ArrowUp'||e.key===' ')AR.hopJump()});
-AR.runnerStart();AR.roadStart();AR.stackStart();AR.hopStart();AR.reflexStart();
+AR.deactivate=()=>{run.on=false;road.on=false;if(tw)tw.on=false;if(hop)hop.on=false;clearTimeout(timer);state='idle';};
+document.addEventListener('keydown',e=>{
+  if(!$('view-arcade').classList.contains('active')||e.target?.closest('input,textarea,select,[contenteditable=true],[role=textbox]'))return;
+  const k=e.key;if(['ArrowLeft','ArrowRight','ArrowUp',' '].includes(k))e.preventDefault();
+  if(k==='ArrowLeft'){AR.runnerMove(-1);AR.roadMove(-1);AR.hopMove(-1)}
+  if(k==='ArrowRight'){AR.runnerMove(1);AR.roadMove(1);AR.hopMove(1)}
+  if(k==='ArrowUp'||k===' ')AR.hopJump();
+});
+/* Draw previews only. Animation loops start only after a player presses Start. */
+rd();roadDraw();tw={on:false,x:135,w:150,dir:1,y:172,level:0,baseX:135,baseW:150};sd();
+hop={on:false,x:200,y:150,vy:0,ps:Array.from({length:8},(_,i)=>({x:(i*61+35)%350,y:185-i*24,w:75})),score:0};hd();
 })();
 </script>
 </body>
