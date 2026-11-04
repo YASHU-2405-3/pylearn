@@ -414,6 +414,7 @@ body{
     <button class="nav-tab-btn" id="tab-quiz" onclick="switchTab('quiz')"><i class="fas fa-trophy text-success"></i> 30 Quiz Levels</button>
     <button class="nav-tab-btn" id="tab-games" onclick="switchTab('games')"><i class="fas fa-gamepad text-warning"></i> Mini Games</button>
     <button class="nav-tab-btn" id="tab-arcade" onclick="switchTab('arcade')"><i class="fas fa-rocket" style="color:#a78bfa"></i> Arcade Games</button>
+    <button class="nav-tab-btn" id="tab-car-lab" onclick="switchTab('car-lab')"><i class="fas fa-car-side" style="color:#fb923c"></i> Car Lab</button>
     
     <div class="engine-status">
         <span class="engine-dot" id="engine-dot"></span>
@@ -448,6 +449,11 @@ body{
             <div class="icon text-warning"><i class="fas fa-gamepad"></i></div>
             <h4>Python Mini Games</h4>
             <p class="text-secondary small">Play Word Guess (case-insensitive), Snake, Tic-Tac-Toe AI, and more!</p>
+        </div>
+        <div class="feature-card" onclick="switchTab('car-lab')">
+            <div class="icon" style="color:#fb923c;"><i class="fas fa-car-side"></i></div>
+            <h4>Car Lab · 10 Original Games</h4>
+            <p class="text-secondary small">Open-world driving, rival races, drift, rally, parking and more.</p>
         </div>
         <div class="feature-card" onclick="switchTab('arcade')">
             <div class="icon" style="color:#a78bfa;"><i class="fas fa-earth-asia"></i></div>
@@ -946,7 +952,143 @@ print(f"Student: {student['name']}, Track: {student['track']}")</textarea>
   <a class="world-card" data-category="skill" href="https://poki.com/en/g/tunnel-rush" target="_blank" rel="noopener noreferrer"><span class="world-icon">🌈</span><span class="world-name">Tunnel Rush</span><span class="world-desc">Fast visual reactions through changing tunnels.</span><span class="world-tag">REFLEX</span></a>
 </div>
 <div class="world-footnote">Games open on their official Poki pages in a new tab. Availability and controls may vary by device and region.</div>
+<section class="view-panel" id="view-car-lab">
+  <div class="car-lab-hero"><div class="car-lab-kicker">PYLearn ORIGINAL GAME STUDIO</div><h1>🚗 Car Lab</h1><p>10 original driving games built into this website. Explore, race, drift, rally and master precision challenges.</p><div class="car-lab-pills"><span>10 Playable Modes</span><span>Keyboard + Touch</span><span>Original Gameplay</span></div></div>
+  <div class="car-lab-help"><b>Controls:</b> Arrow keys / WASD to steer and accelerate · Space for brake/action · Mobile users can use the buttons on each game card. Start one game at a time for best performance.</div>
+  <div class="car-game-grid"><article class="car-game-card" data-car-game="open">
+  <div class="car-game-top"><h3>🌍 Open World Drive</h3><span class="car-mode">OPEN</span></div>
+  <p>Explore a large scrolling city, find checkpoints and cruise freely.</p>
+  <canvas id="cl-open" class="car-canvas" width="720" height="360" aria-label="🌍 Open World Drive game area"></canvas>
+  <div class="car-hud"><span id="cl-score-open">Score: 0</span><span id="cl-status-open">Press Start to play</span></div>
+  <div class="car-controls"><button onclick="CarLab.start('open')">▶ Start / Restart</button><button onclick="CarLab.steer('open',-1)">◀ Left</button><button onclick="CarLab.steer('open',1)">Right ▶</button><button onclick="CarLab.action('open')">Action / Brake</button></div>
+</article><article class="car-game-card" data-car-game="circuit">
+  <div class="car-game-top"><h3>🏁 Pro Circuit Racing</h3><span class="car-mode">CIRCUIT</span></div>
+  <p>Race rival drivers across a multi-lap circuit.</p>
+  <canvas id="cl-circuit" class="car-canvas" width="720" height="360" aria-label="🏁 Pro Circuit Racing game area"></canvas>
+  <div class="car-hud"><span id="cl-score-circuit">Score: 0</span><span id="cl-status-circuit">Press Start to play</span></div>
+  <div class="car-controls"><button onclick="CarLab.start('circuit')">▶ Start / Restart</button><button onclick="CarLab.steer('circuit',-1)">◀ Left</button><button onclick="CarLab.steer('circuit',1)">Right ▶</button><button onclick="CarLab.action('circuit')">Action / Brake</button></div>
+</article><article class="car-game-card" data-car-game="hard">
+  <div class="car-game-top"><h3>👑 Impossible Rival Cup</h3><span class="car-mode">HARD</span></div>
+  <p>Elite AI adapts its pace; clean driving is essential.</p>
+  <canvas id="cl-hard" class="car-canvas" width="720" height="360" aria-label="👑 Impossible Rival Cup game area"></canvas>
+  <div class="car-hud"><span id="cl-score-hard">Score: 0</span><span id="cl-status-hard">Press Start to play</span></div>
+  <div class="car-controls"><button onclick="CarLab.start('hard')">▶ Start / Restart</button><button onclick="CarLab.steer('hard',-1)">◀ Left</button><button onclick="CarLab.steer('hard',1)">Right ▶</button><button onclick="CarLab.action('hard')">Action / Brake</button></div>
+</article><article class="car-game-card" data-car-game="drift">
+  <div class="car-game-top"><h3>💨 Drift Score Arena</h3><span class="car-mode">DRIFT</span></div>
+  <p>Hold controlled slides through marked corners.</p>
+  <canvas id="cl-drift" class="car-canvas" width="720" height="360" aria-label="💨 Drift Score Arena game area"></canvas>
+  <div class="car-hud"><span id="cl-score-drift">Score: 0</span><span id="cl-status-drift">Press Start to play</span></div>
+  <div class="car-controls"><button onclick="CarLab.start('drift')">▶ Start / Restart</button><button onclick="CarLab.steer('drift',-1)">◀ Left</button><button onclick="CarLab.steer('drift',1)">Right ▶</button><button onclick="CarLab.action('drift')">Action / Brake</button></div>
+</article><article class="car-game-card" data-car-game="traffic">
+  <div class="car-game-top"><h3>🚦 Highway Traffic Run</h3><span class="car-mode">TRAFFIC</span></div>
+  <p>Weave through dense traffic and survive for distance.</p>
+  <canvas id="cl-traffic" class="car-canvas" width="720" height="360" aria-label="🚦 Highway Traffic Run game area"></canvas>
+  <div class="car-hud"><span id="cl-score-traffic">Score: 0</span><span id="cl-status-traffic">Press Start to play</span></div>
+  <div class="car-controls"><button onclick="CarLab.start('traffic')">▶ Start / Restart</button><button onclick="CarLab.steer('traffic',-1)">◀ Left</button><button onclick="CarLab.steer('traffic',1)">Right ▶</button><button onclick="CarLab.action('traffic')">Action / Brake</button></div>
+</article><article class="car-game-card" data-car-game="sprint">
+  <div class="car-game-top"><h3>📍 Checkpoint Sprint</h3><span class="car-mode">SPRINT</span></div>
+  <p>Reach every checkpoint before the countdown ends.</p>
+  <canvas id="cl-sprint" class="car-canvas" width="720" height="360" aria-label="📍 Checkpoint Sprint game area"></canvas>
+  <div class="car-hud"><span id="cl-score-sprint">Score: 0</span><span id="cl-status-sprint">Press Start to play</span></div>
+  <div class="car-controls"><button onclick="CarLab.start('sprint')">▶ Start / Restart</button><button onclick="CarLab.steer('sprint',-1)">◀ Left</button><button onclick="CarLab.steer('sprint',1)">Right ▶</button><button onclick="CarLab.action('sprint')">Action / Brake</button></div>
+</article><article class="car-game-card" data-car-game="drag">
+  <div class="car-game-top"><h3>⚡ Drag Strip Duel</h3><span class="car-mode">DRAG</span></div>
+  <p>Shift at the right RPM and beat the launch timer.</p>
+  <canvas id="cl-drag" class="car-canvas" width="720" height="360" aria-label="⚡ Drag Strip Duel game area"></canvas>
+  <div class="car-hud"><span id="cl-score-drag">Score: 0</span><span id="cl-status-drag">Press Start to play</span></div>
+  <div class="car-controls"><button onclick="CarLab.start('drag')">▶ Start / Restart</button><button onclick="CarLab.steer('drag',-1)">◀ Left</button><button onclick="CarLab.steer('drag',1)">Right ▶</button><button onclick="CarLab.action('drag')">Action / Brake</button></div>
+</article><article class="car-game-card" data-car-game="rally">
+  <div class="car-game-top"><h3>⛰️ Rally Dirt Challenge</h3><span class="car-mode">RALLY</span></div>
+  <p>Handle loose surfaces, bends and split times.</p>
+  <canvas id="cl-rally" class="car-canvas" width="720" height="360" aria-label="⛰️ Rally Dirt Challenge game area"></canvas>
+  <div class="car-hud"><span id="cl-score-rally">Score: 0</span><span id="cl-status-rally">Press Start to play</span></div>
+  <div class="car-controls"><button onclick="CarLab.start('rally')">▶ Start / Restart</button><button onclick="CarLab.steer('rally',-1)">◀ Left</button><button onclick="CarLab.steer('rally',1)">Right ▶</button><button onclick="CarLab.action('rally')">Action / Brake</button></div>
+</article><article class="car-game-card" data-car-game="park">
+  <div class="car-game-top"><h3>🅿️ Precision Parking</h3><span class="car-mode">PARK</span></div>
+  <p>Navigate tight spaces without hitting barriers.</p>
+  <canvas id="cl-park" class="car-canvas" width="720" height="360" aria-label="🅿️ Precision Parking game area"></canvas>
+  <div class="car-hud"><span id="cl-score-park">Score: 0</span><span id="cl-status-park">Press Start to play</span></div>
+  <div class="car-controls"><button onclick="CarLab.start('park')">▶ Start / Restart</button><button onclick="CarLab.steer('park',-1)">◀ Left</button><button onclick="CarLab.steer('park',1)">Right ▶</button><button onclick="CarLab.action('park')">Action / Brake</button></div>
+</article><article class="car-game-card" data-car-game="pursuit">
+  <div class="car-game-top"><h3>🚓 Pursuit Escape</h3><span class="car-mode">PURSUIT</span></div>
+  <p>Outdrive rival patrol cars and reach safe zones.</p>
+  <canvas id="cl-pursuit" class="car-canvas" width="720" height="360" aria-label="🚓 Pursuit Escape game area"></canvas>
+  <div class="car-hud"><span id="cl-score-pursuit">Score: 0</span><span id="cl-status-pursuit">Press Start to play</span></div>
+  <div class="car-controls"><button onclick="CarLab.start('pursuit')">▶ Start / Restart</button><button onclick="CarLab.steer('pursuit',-1)">◀ Left</button><button onclick="CarLab.steer('pursuit',1)">Right ▶</button><button onclick="CarLab.action('pursuit')">Action / Brake</button></div>
+</article></div>
 </section>
+<style>
+.car-lab-hero{margin:22px auto 14px;max-width:1240px;padding:28px 24px;border-radius:22px;background:radial-gradient(circle at 85% 20%,#7c2d1255,transparent 34%),linear-gradient(120deg,#111b35,#25153b 55%,#102b35);border:1px solid #fb923c55}
+.car-lab-kicker{font-size:.7rem;letter-spacing:.2em;color:#fdba74;font-weight:900}.car-lab-hero h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff;margin:8px 0}.car-lab-hero p{color:#cbd5e1;max-width:720px}.car-lab-pills{display:flex;flex-wrap:wrap;gap:8px}.car-lab-pills span{border:1px solid #ffffff2c;background:#ffffff12;border-radius:999px;padding:6px 11px;font-size:.75rem;color:#fed7aa}
+.car-lab-help{max-width:1240px;margin:0 auto 16px;padding:12px 16px;border-radius:12px;background:#17233b;color:#cbd5e1;font-size:.84rem}
+.car-game-grid{max-width:1240px;margin:auto;padding:0 16px 36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:16px}
+.car-game-card{min-width:0;padding:14px;border:1px solid #ffffff20;border-radius:17px;background:linear-gradient(145deg,#17233b,#0d1528);box-shadow:0 8px 24px #0003}
+.car-game-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.car-game-top h3{font-size:1.03rem;color:#f8fafc;font-weight:850;margin:0}.car-mode{font-size:.6rem;letter-spacing:.08em;color:#fdba74;border:1px solid #fb923c55;padding:4px 7px;border-radius:999px}
+.car-game-card p{color:#9fb0c9;font-size:.78rem;min-height:36px;margin:8px 0}
+.car-canvas{display:block;width:100%;height:auto;aspect-ratio:2/1;background:#101827;border:1px solid #ffffff1b;border-radius:11px}
+.car-hud{display:flex;justify-content:space-between;gap:8px;padding:8px 2px;color:#cbd5e1;font-size:.72rem}.car-hud span:last-child{text-align:right;color:#fdba74}
+.car-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.car-controls button{border:1px solid #fb923c55;background:#29354d;color:#fff;border-radius:9px;padding:9px 4px;font-size:.72rem;font-weight:800}.car-controls button:first-child{background:linear-gradient(120deg,#c2410c,#ea580c);border:0}
+@media(max-width:420px){.car-game-grid{padding:0 9px 24px;gap:10px}.car-game-card{padding:10px}.car-controls button{font-size:.65rem;padding:8px 2px}.car-lab-hero{margin:12px 9px;padding:20px 16px}}
+</style>
+<script>
+(function(){
+ const ids=["open","circuit","hard","drift","traffic","sprint","drag","rally","park","pursuit"];
+ const modes={open:0,circuit:1,hard:2,drift:3,traffic:4,sprint:5,drag:6,rally:7,park:8,pursuit:9};
+ const G={},CarLab={};
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ const rand=(a,b)=>a+Math.random()*(b-a);
+ const labels={open:"Explore the city and collect glowing checkpoints.",circuit:"Complete 3 laps. Rivals are on the track.",hard:"Elite rivals are extremely fast. Find the racing line.",drift:"Steer into bends and build drift points.",traffic:"Avoid traffic for as long as possible.",sprint:"Collect all checkpoints before time runs out.",drag:"Tap Action near the green launch window to shift.",rally:"Control the car on a winding dirt stage.",park:"Park inside the highlighted bay without touching cones.",pursuit:"Avoid patrol cars and reach the glowing exit."};
+ function fresh(id){return {id,frame:0,x:0,y:0,v:0,angle:0,score:0,time:0,lap:1,cp:0,health:100,active:true,done:false,obs:[],rivals:[],marks:[],shift:0,gear:1,drift:0,trail:[],seed:0};}
+ function ctx(id){const c=document.getElementById("cl-"+id);return c&&c.getContext("2d")}
+ function car(x,y,a,color,scale=1){return {x,y,a,color,scale}}
+ function drawCar(c,o){c.save();c.translate(o.x,o.y);c.rotate(o.a||0);c.scale(o.scale||1, o.scale||1);c.fillStyle="#050914";c.fillRect(-17,-11,34,22);c.fillStyle=o.color;c.fillRect(-15,-10,30,20);c.fillStyle="#c7eaff";c.fillRect(1,-7,8,14);c.fillStyle="#fef3c7";c.fillRect(12,-7,3,4);c.fillRect(12,3,3,4);c.restore()}
+ function text(c,t,x,y,size=13,color="#e2e8f0"){c.fillStyle=color;c.font="bold "+size+"px system-ui";c.fillText(t,x,y)}
+ function road(c,offset=0){c.fillStyle="#183b32";c.fillRect(0,0,720,360);c.fillStyle="#303b4b";c.fillRect(170,0,380,360);c.strokeStyle="#e2e8f0";c.lineWidth=4;c.setLineDash([22,20]);for(let x of [296,424]){c.beginPath();c.moveTo(x,offset%42-42);c.lineTo(x,360);c.stroke()}c.setLineDash([]);c.fillStyle="#d6a56c";c.fillRect(164,0,6,360);c.fillRect(550,0,6,360)}
+ function world(c,s){c.fillStyle="#142b2b";c.fillRect(0,0,720,360);let ox=(s.x*.28)%120,oy=(s.y*.28)%100;
+  for(let y=-100;y<460;y+=100)for(let x=-120;x<850;x+=120){let xx=(x-ox+840)%840-60,yy=(y-oy+460)%460-50;c.fillStyle="#24483e";c.fillRect(xx+5,yy+5,105,82);c.fillStyle="#35445a";c.fillRect(xx+38,yy+12,30,64);c.fillRect(xx+12,yy+32,90,24);c.fillStyle="#526477";c.fillRect(xx+12,yy+32,90,3);c.fillStyle="#1d3340";c.fillRect(xx+8,yy+8,24,20)}
+  c.strokeStyle="#fbbf24";c.lineWidth=3;c.setLineDash([8,9]);c.beginPath();c.arc(360,180,95,0,Math.PI*2);c.stroke();c.setLineDash([]);
+ }
+ function render(s){const c=ctx(s.id);if(!c)return;c.clearRect(0,0,720,360);
+  if(s.id==="open"){world(c,s);drawCar(c,car(360,180,s.angle,"#38bdf8",1.2));text(c,"CITY EXPLORER  •  CHECKPOINTS "+s.cp,18,26,14,"#fef08a");}
+  else if(["circuit","hard","drift","sprint","rally","park","pursuit"].includes(s.id)){
+   road(c,s.frame*2);
+   if(s.id==="rally"){c.fillStyle="#80613b";c.fillRect(170,0,380,360);c.strokeStyle="#f5deb3";c.lineWidth=3;c.setLineDash([14,18]);c.beginPath();c.moveTo(360,0);c.bezierCurveTo(190,100,530,220,350,360);c.stroke();c.setLineDash([])}
+   if(s.id==="park"){c.strokeStyle="#facc15";c.lineWidth=4;c.strokeRect(430,230,100,72);text(c,"PARK BAY",438,220,12,"#fde68a")}
+   if(s.id==="pursuit"){s.rivals.forEach(r=>drawCar(c,car(r.x,r.y,r.a,"#f87171")));text(c,"ESCAPE ZONE →",530,30,12,"#86efac")}
+   else if(s.id!=="park"){s.rivals.forEach(r=>drawCar(c,car(r.x,r.y,r.a,"#fb923c")))}
+   s.obs.forEach(o=>{c.fillStyle=o.color||"#f87171";c.fillRect(o.x-13,o.y-10,26,20)});
+   drawCar(c,car(360+s.x,275,s.angle,s.id==="hard"?"#fbbf24":"#38bdf8",1.15));
+   if(s.id==="drift"){text(c,"DRIFT ZONE",18,28,14,"#f9a8d4");s.trail.forEach(p=>{c.fillStyle="#f0abfc88";c.fillRect(p.x-2,p.y-2,4,4)})}
+   if(s.id==="sprint"){text(c,"CHECKPOINT "+s.cp+"/6",18,28,14,"#fde68a")}
+   if(s.id==="hard")text(c,"ELITE AI • MAX DIFFICULTY",18,28,14,"#fca5a5");
+  } else if(s.id==="traffic"){road(c,s.frame*3);s.obs.forEach(o=>drawCar(c,car(o.x,o.y,0,"#fb923c")));drawCar(c,car(360+s.x,286,0,"#38bdf8",1.2));text(c,"DISTANCE "+Math.floor(s.score)+" m",18,28)}
+  else if(s.id==="drag"){c.fillStyle="#172a38";c.fillRect(0,0,720,360);c.fillStyle="#354153";c.fillRect(40,130,640,100);c.fillStyle="#22c55e";c.fillRect(420,110,80,140);c.fillStyle="#ef4444";c.fillRect(500,110,120,140);drawCar(c,car(90+Math.min(520,s.score*3),180,0,"#38bdf8",1.4));text(c,"RPM / SHIFT WINDOW",40,85,18);text(c,"GEAR "+s.gear,40,275,16,"#fde68a")}
+  const hud=document.getElementById("cl-score-"+s.id),status=document.getElementById("cl-status-"+s.id);
+  if(hud)hud.textContent="Score: "+Math.floor(s.score)+" · Speed: "+Math.floor(Math.abs(s.v)*18);
+  if(status)status.textContent=s.done?"Finished · Press restart":labels[s.id];
+ }
+ function spawn(s){if(s.id==="traffic")s.obs.push({x:rand(220,500),y:-30,color:"#fb923c"});else if(s.id==="pursuit")s.rivals.push({x:rand(220,500),y:rand(-80,30),a:0});else if(["circuit","hard","rally"].includes(s.id))s.rivals.push({x:rand(220,500),y:rand(-100,0),a:0})}
+ function finish(s,msg){s.done=true;s.active=false;const e=document.getElementById("cl-status-"+s.id);if(e)e.textContent=msg||"Finished · Score "+Math.floor(s.score)}
+ function step(s){if(!s.active)return;s.frame++;s.time++;
+  const id=s.id;
+  if(id==="open"){s.x+=Math.cos(s.angle)*s.v;s.y+=Math.sin(s.angle)*s.v;s.v*=.985;if(s.frame%180===0){s.cp++;s.score+=100}}
+  else if(id==="drag"){s.v=Math.min(19,s.v+.025);s.score+=s.v*.11;if(s.frame%90===0)s.gear=Math.min(6,s.gear+1);if(s.frame>950)finish(s,"Finish! Score "+Math.floor(s.score))}
+  else if(id==="park"){s.x+=Math.cos(s.angle)*s.v;s.y+=Math.sin(s.angle)*s.v;s.v*=.94;if(Math.hypot(s.x-120,s.y-60)<25){s.score+=500;finish(s,"Perfect park! +500")}if(s.frame>900)finish(s,"Time up — try again")}
+  else if(id==="traffic"){if(s.frame%55===0)spawn(s);s.obs.forEach(o=>o.y+=4+Math.abs(s.v)*.12);s.obs=s.obs.filter(o=>o.y<390);if(s.obs.some(o=>Math.abs(o.x-(360+s.x))<27&&Math.abs(o.y-286)<28)){finish(s,"Crash! Distance "+Math.floor(s.score));return}s.score+=.12+Math.abs(s.v)*.04}
+  else if(id==="drift"){s.v=Math.min(9,s.v+.025);s.drift=Math.abs(s.angle)*s.v;if(s.drift>.35)s.score+=s.drift*.22;if(s.frame%9===0)s.trail.push({x:360+s.x,y:275});if(s.trail.length>60)s.trail.shift()}
+  else if(id==="sprint"){if(s.frame%100===0){s.cp++;s.score+=150;if(s.cp>=6)finish(s,"Sprint won! +900")}if(s.frame>720)finish(s,"Time up — checkpoints "+s.cp+"/6")}
+  else if(id==="circuit"||id==="hard"||id==="rally"||id==="pursuit"){if(s.frame%75===0)spawn(s);s.rivals.forEach(r=>{r.y+=id==="hard"?rand(4.8,7.2):id==="rally"?rand(2.6,4.2):rand(2.2,3.8);r.x+=Math.sin((s.frame+r.y)/40)*(id==="hard"?2.8:1.3)});s.rivals=s.rivals.filter(r=>r.y<390);s.score+=id==="hard"?.07:.12;if(id==="circuit"&&s.frame%500===0){s.lap++;if(s.lap>3)finish(s,"Race won! Total "+Math.floor(s.score))}if(id==="hard"&&s.frame>1200)finish(s,"You survived the elite cup! Score "+Math.floor(s.score));if(id==="rally"&&s.frame>1050)finish(s,"Rally stage complete! "+Math.floor(s.score));if(id==="pursuit"&&s.frame>900)finish(s,"Escape successful!")}
+  else if(id==="hard"){/* intentionally aggressive opponent pacing is handled above */}
+  if(id!=="open"&&id!=="park"&&id!=="drag")s.v=Math.max(1.2,s.v*.998);
+  render(s);if(s.active)requestAnimationFrame(()=>step(s));
+ }
+ CarLab.start=id=>{Object.values(G).forEach(g=>{g.active=false});const s=fresh(id);G[id]=s;s.active=true;if(id==="open"){s.v=3;s.x=rand(-30,30);s.y=rand(-30,30)}if(id==="park"){s.x=-150;s.y=85;s.v=2.2}s.v=s.v||3;if(id==="hard")s.v=6.5;render(s);step(s)};
+ CarLab.steer=(id,d)=>{const s=G[id];if(!s||!s.active)return;if(id==="open"||id==="park"){s.angle+=d*.16;s.v=clamp(s.v+d*.25,-3,9)}else if(id==="drag"){s.gear=Math.min(6,s.gear+1);s.score+=s.v*5}else{s.x=clamp(s.x+d*34,-130,130);s.angle=d*.14;if(id==="drift")s.score+=Math.abs(d)*4}render(s)};
+ CarLab.action=id=>{const s=G[id];if(!s||!s.active)return;if(id==="drag"){const rpm=s.frame%90;if(rpm>35&&rpm<58){s.score+=180;s.v+=2}else{s.score=Math.max(0,s.score-45);s.v=Math.max(1,s.v-1)}}else if(id==="park"){s.v*=.45;if(Math.hypot(s.x-120,s.y-60)<75)finish(s,"Parked! Precision score "+Math.floor(500-Math.abs(s.x-120)*2))}else{s.v=Math.max(.8,s.v*.65);s.score+=id==="drift"?25:0}render(s)};
+ document.addEventListener("keydown",e=>{if(!document.getElementById("view-car-lab")?.classList.contains("active"))return;const id=Object.keys(G).find(k=>G[k].active);if(!id)return;if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")CarLab.steer(id,-1);if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")CarLab.steer(id,1);if(e.key===" "||e.key==="ArrowDown"||e.key.toLowerCase()==="s"){e.preventDefault();CarLab.action(id)}});
+ window.CarLab=CarLab;
+})();
+</script></section>
 <script>
 function filterWorldGames(){
   const q=(document.getElementById('world-search').value||'').toLowerCase();
