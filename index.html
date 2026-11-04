@@ -257,6 +257,7 @@ body{
 .ttt-cell { width: 65px; height: 65px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; font-size: 1.8rem; font-weight: bold; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 #snake-canvas { background: #06080e; border: 2px solid rgba(58,245,123,0.3); border-radius: 10px; display: block; margin: 8px auto; }
 .arcade-head{text-align:center;padding:30px 16px 16px}.arcade-head h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;background:linear-gradient(90deg,#a78bfa,#22d3ee,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.arcade-head p{color:#9aa8bd}.arcade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:18px;max-width:1240px;margin:18px auto 48px;padding:0 18px}.arcade-card{background:linear-gradient(145deg,rgba(20,28,52,.97),rgba(10,15,30,.97));border:1px solid rgba(139,92,246,.3);border-radius:18px;padding:17px;min-width:0}.arcade-card h3{font-size:1.15rem;color:#e0e7ff;font-weight:800}.arcade-card p{font-size:.84rem;color:#9aa8bd;min-height:34px}.arcade-canvas{display:block;width:100%;max-width:420px;height:auto;aspect-ratio:2/1;background:#080d1c;border:1px solid #34415f;border-radius:12px;margin:10px auto;touch-action:manipulation}.arcade-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px}.arcade-btn{border:0;border-radius:10px;padding:9px 14px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;font-weight:700}.arcade-btn.alt{background:#26334d;border:1px solid #53617c}.arcade-status{text-align:center;color:#67e8f9;font-weight:700;min-height:24px;margin-top:8px}.bubble-board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;max-width:330px;margin:12px auto}.bubble-cell{aspect-ratio:1;border:1px solid #ffffff55;border-radius:50%;min-width:0;cursor:pointer}.reflex-pad{height:140px;width:100%;border:0;border-radius:14px;background:#26334d;color:white;font-size:1.4rem;font-weight:900;margin-top:12px}@media(max-width:480px){.arcade-grid{padding:0 12px}.arcade-card{padding:14px}.arcade-actions .arcade-btn{flex:1 1 28%}}
+.world-tools{max-width:1240px;margin:0 auto 18px;padding:0 18px}.world-tools input{width:100%;padding:12px 15px;border-radius:12px;border:1px solid #43516d;background:#101a30;color:#f8fafc;outline:none}.world-filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.world-filter{border:1px solid #475569;background:#17233b;color:#dbeafe;border-radius:999px;padding:8px 13px;font-weight:700;font-size:.82rem}.world-filter.active{background:linear-gradient(120deg,#6d28d9,#2563eb);border-color:transparent;color:#fff}.world-count{font-size:.82rem;color:#94a3b8}.world-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;max-width:1240px;margin:14px auto 18px;padding:0 18px}.world-card{display:flex;flex-direction:column;gap:7px;min-height:174px;padding:17px;text-decoration:none;color:#e2e8f0;background:linear-gradient(145deg,rgba(22,34,62,.96),rgba(12,19,36,.98));border:1px solid rgba(96,165,250,.22);border-radius:16px;transition:transform .2s,border-color .2s,box-shadow .2s}.world-card:hover{transform:translateY(-4px);border-color:#60a5fa;box-shadow:0 10px 26px #0005;color:#fff}.world-card[hidden]{display:none!important}.world-icon{font-size:1.8rem}.world-name{font-size:1rem;font-weight:800}.world-desc{font-size:.8rem;line-height:1.45;color:#aab8ce;flex:1}.world-tag{align-self:flex-start;font-size:.65rem;font-weight:800;letter-spacing:.07em;color:#67e8f9;background:#164e6380;padding:4px 8px;border-radius:999px}.world-footnote{text-align:center;color:#8492aa;font-size:.76rem;padding:0 16px 28px}@media(max-width:480px){.world-tools,.world-grid{padding-left:12px;padding-right:12px}.world-filter{font-size:.75rem;padding:7px 10px}.world-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.world-card{padding:12px;min-height:185px}.world-name{font-size:.9rem}.world-desc{font-size:.74rem}}
 </style>
 <style>
 
@@ -447,6 +448,11 @@ body{
             <div class="icon text-warning"><i class="fas fa-gamepad"></i></div>
             <h4>Python Mini Games</h4>
             <p class="text-secondary small">Play Word Guess (case-insensitive), Snake, Tic-Tac-Toe AI, and more!</p>
+        </div>
+        <div class="feature-card" onclick="switchTab('arcade')">
+            <div class="icon" style="color:#a78bfa;"><i class="fas fa-earth-asia"></i></div>
+            <h4>World Arcade</h4>
+            <p class="text-secondary small">Explore hand-picked car games, open-world driving, character adventures and quick skill games.</p>
         </div>
     </div>
 </div>
@@ -896,6 +902,79 @@ print(f"Student: {student['name']}, Track: {student['track']}")</textarea>
 <article class="arcade-card"><h3>🗼 Stack Tower</h3><p>Tap at the right moment to stack each moving floor.</p><canvas id="ar-stack" class="arcade-canvas" width="420" height="210"></canvas><div class="arcade-actions"><button class="arcade-btn" onclick="AR.stackStart()">Start / Restart</button><button class="arcade-btn alt" onclick="AR.stackDrop()">Drop Block</button></div><div id="ar-stack-status" class="arcade-status">Build your tallest tower.</div></article>
 <article class="arcade-card"><h3>☁️ Sky Hop</h3><p>Jump between platforms and climb as high as possible.</p><canvas id="ar-hop" class="arcade-canvas" width="420" height="210"></canvas><div class="arcade-actions"><button class="arcade-btn" onclick="AR.hopStart()">Start / Restart</button><button class="arcade-btn alt" onclick="AR.hopMove(-1)">◀</button><button class="arcade-btn alt" onclick="AR.hopJump()">Jump ⬆</button><button class="arcade-btn alt" onclick="AR.hopMove(1)">▶</button></div><div id="ar-hop-status" class="arcade-status">Use buttons to hop.</div></article>
 <article class="arcade-card"><h3>⚡ Reflex Rush</h3><p>Wait for green, then tap as quickly as you can.</p><button id="ar-reflex-pad" class="reflex-pad" onclick="AR.reflexTap()">START</button><div class="arcade-actions"><button class="arcade-btn alt" onclick="AR.reflexStart()">Try Again</button></div><div id="ar-reflex-status" class="arcade-status">Your reaction time appears here.</div></article>
+</div>
+<div class="arcade-head" style="padding-top:10px">
+  <h2 style="color:#e0e7ff;font-weight:850">🌍 World Arcade · Curated Games</h2>
+  <p>Hand-picked browser games from official Poki game pages. Choose a category or search, then open a game in a new tab.</p>
+</div>
+<div class="world-tools">
+  <input id="world-search" type="search" placeholder="🔎 Search games..." aria-label="Search games" oninput="filterWorldGames()">
+  <div class="world-filters">
+    <button class="world-filter active" onclick="setWorldFilter('all',this)">All Games</button>
+    <button class="world-filter" onclick="setWorldFilter('car',this)">🚗 Cars</button>
+    <button class="world-filter" onclick="setWorldFilter('world',this)">🌍 Open World</button>
+    <button class="world-filter" onclick="setWorldFilter('character',this)">🧍 Character & Adventure</button>
+    <button class="world-filter" onclick="setWorldFilter('skill',this)">⚡ Skill & Reaction</button>
+  </div>
+  <div id="world-count" class="world-count">26 curated games</div>
+</div>
+<div class="world-grid" id="world-game-grid">
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/mr-racer-car-racing" target="_blank" rel="noopener noreferrer"><span class="world-icon">🏎️</span><span class="world-name">MR RACER – Car Racing</span><span class="world-desc">Traffic racing, multiple modes and car upgrades.</span><span class="world-tag">CAR RACING</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/drive-mad" target="_blank" rel="noopener noreferrer"><span class="world-icon">🚙</span><span class="world-name">Drive Mad</span><span class="world-desc">Physics-based driving across themed worlds and levels.</span><span class="world-tag">DRIVING</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/burnout-drift-hilltop" target="_blank" rel="noopener noreferrer"><span class="world-icon">🏁</span><span class="world-name">Burnout Drift: Hilltop</span><span class="world-desc">Precision drifting and corner control.</span><span class="world-tag">DRIFT</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/polytrack" target="_blank" rel="noopener noreferrer"><span class="world-icon">🏎️</span><span class="world-name">PolyTrack</span><span class="world-desc">Time-trial racing on technical tracks.</span><span class="world-tag">TIME TRIAL</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/supercars-city" target="_blank" rel="noopener noreferrer"><span class="world-icon">🚘</span><span class="world-name">Supercars City</span><span class="world-desc">Explore and drive a collection of supercars.</span><span class="world-tag">CAR WORLD</span></a>
+  <a class="world-card" data-category="car world" href="https://poki.com/en/g/crazy-cars" target="_blank" rel="noopener noreferrer"><span class="world-icon">🌆</span><span class="world-name">Crazy Cars</span><span class="world-desc">Free-roam style city driving and exploration.</span><span class="world-tag">OPEN WORLD</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/sling-drift" target="_blank" rel="noopener noreferrer"><span class="world-icon">🛞</span><span class="world-name">Sling Drift</span><span class="world-desc">One-touch cornering and drift timing.</span><span class="world-tag">DRIFT SKILL</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/car-parking-school" target="_blank" rel="noopener noreferrer"><span class="world-icon">🅿️</span><span class="world-name">Car Parking School</span><span class="world-desc">Parking precision and careful steering.</span><span class="world-tag">PARKING</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/urban-racer" target="_blank" rel="noopener noreferrer"><span class="world-icon">🌃</span><span class="world-name">Urban Racer</span><span class="world-desc">City-themed racing challenges.</span><span class="world-tag">RACING</span></a>
+  <a class="world-card" data-category="car world" href="https://poki.com/en/g/real-cars-in-city" target="_blank" rel="noopener noreferrer"><span class="world-icon">🚗</span><span class="world-name">Real Cars in City</span><span class="world-desc">City driving with different cars to try.</span><span class="world-tag">CITY DRIVE</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/parkmania" target="_blank" rel="noopener noreferrer"><span class="world-icon">🅿️</span><span class="world-name">Parkmania</span><span class="world-desc">Parking puzzles and vehicle control.</span><span class="world-tag">PARKING</span></a>
+  <a class="world-card" data-category="car world" href="https://poki.com/en/g/city-rider" target="_blank" rel="noopener noreferrer"><span class="world-icon">🏙️</span><span class="world-name">City Rider</span><span class="world-desc">Cruise around a city environment.</span><span class="world-tag">CITY WORLD</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/traffic-escape" target="_blank" rel="noopener noreferrer"><span class="world-icon">🚦</span><span class="world-name">Traffic Escape!</span><span class="world-desc">Untangle traffic with smart moves.</span><span class="world-tag">TRAFFIC PUZZLE</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/crazy-race" target="_blank" rel="noopener noreferrer"><span class="world-icon">🏆</span><span class="world-name">Crazy Race</span><span class="world-desc">Quick racing rounds and track challenges.</span><span class="world-tag">RACING</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/eggy-car" target="_blank" rel="noopener noreferrer"><span class="world-icon">🥚</span><span class="world-name">Eggy Car</span><span class="world-desc">Keep the egg steady over rolling hills.</span><span class="world-tag">DRIVING SKILL</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/grand-prix-hero" target="_blank" rel="noopener noreferrer"><span class="world-icon">🏁</span><span class="world-name">Grand Prix Hero</span><span class="world-desc">Race through international circuits.</span><span class="world-tag">RACING</span></a>
+  <a class="world-card" data-category="car" href="https://poki.com/en/g/vortex-racer" target="_blank" rel="noopener noreferrer"><span class="world-icon">🌀</span><span class="world-name">Vortex Racer</span><span class="world-desc">Fast reflex-based racing through winding routes.</span><span class="world-tag">ARCADE RACE</span></a>
+  <a class="world-card" data-category="character skill" href="https://poki.com/en/g/subway-surfers" target="_blank" rel="noopener noreferrer"><span class="world-icon">🛹</span><span class="world-name">Subway Surfers</span><span class="world-desc">Character runner with quick lane changes and collectibles.</span><span class="world-tag">CHARACTER RUNNER</span></a>
+  <a class="world-card" data-category="character skill" href="https://poki.com/en/g/stickman-hook" target="_blank" rel="noopener noreferrer"><span class="world-icon">🧍</span><span class="world-name">Stickman Hook</span><span class="world-desc">Swing through levels with accurate timing.</span><span class="world-tag">CHARACTER SKILL</span></a>
+  <a class="world-card" data-category="world character" href="https://poki.com/en/g/monkey-mart" target="_blank" rel="noopener noreferrer"><span class="world-icon">🐵</span><span class="world-name">Monkey Mart</span><span class="world-desc">Run a little store, stock shelves and serve customers.</span><span class="world-tag">SIMULATION</span></a>
+  <a class="world-card" data-category="character skill" href="https://poki.com/en/g/level-devil" target="_blank" rel="noopener noreferrer"><span class="world-icon">😈</span><span class="world-name">Level Devil</span><span class="world-desc">Tricky platform puzzles that test observation.</span><span class="world-tag">PLATFORM PUZZLE</span></a>
+  <a class="world-card" data-category="character" href="https://poki.com/en/g/dragon-the-dragon" target="_blank" rel="noopener noreferrer"><span class="world-icon">🐉</span><span class="world-name">Dragon the Dragon</span><span class="world-desc">A character-led adventure game.</span><span class="world-tag">ADVENTURE</span></a>
+  <a class="world-card" data-category="character skill" href="https://poki.com/en/g/jetpack-speed-obby" target="_blank" rel="noopener noreferrer"><span class="world-icon">🚀</span><span class="world-name">Jetpack Speed Obby</span><span class="world-desc">Navigate obstacle courses with quick movement.</span><span class="world-tag">OBBY SKILL</span></a>
+  <a class="world-card" data-category="character skill" href="https://poki.com/en/g/temple-run-2" target="_blank" rel="noopener noreferrer"><span class="world-icon">🏃</span><span class="world-name">Temple Run 2</span><span class="world-desc">Endless character running with fast reactions.</span><span class="world-tag">ENDLESS RUNNER</span></a>
+  <a class="world-card" data-category="world" href="https://poki.com/en/g/hole-io" target="_blank" rel="noopener noreferrer"><span class="world-icon">🕳️</span><span class="world-name">Hole.io</span><span class="world-desc">Explore a compact city map and grow by collecting objects.</span><span class="world-tag">WORLD / ARCADE</span></a>
+  <a class="world-card" data-category="skill" href="https://poki.com/en/g/woody-sort" target="_blank" rel="noopener noreferrer"><span class="world-icon">🪵</span><span class="world-name">Woody Sort</span><span class="world-desc">Relaxing sorting puzzles and pattern recognition.</span><span class="world-tag">PUZZLE</span></a>
+  <a class="world-card" data-category="skill" href="https://poki.com/en/g/slice-master" target="_blank" rel="noopener noreferrer"><span class="world-icon">🎯</span><span class="world-name">Slice Master</span><span class="world-desc">Timing-focused skill rounds and score chasing.</span><span class="world-tag">REACTION</span></a>
+  <a class="world-card" data-category="skill" href="https://poki.com/en/g/speed-stars" target="_blank" rel="noopener noreferrer"><span class="world-icon">⚡</span><span class="world-name">Speed Stars</span><span class="world-desc">Rhythm and timing-based sprint races.</span><span class="world-tag">REACTION</span></a>
+  <a class="world-card" data-category="skill" href="https://poki.com/en/g/tunnel-rush" target="_blank" rel="noopener noreferrer"><span class="world-icon">🌈</span><span class="world-name">Tunnel Rush</span><span class="world-desc">Fast visual reactions through changing tunnels.</span><span class="world-tag">REFLEX</span></a>
+</div>
+<div class="world-footnote">Games open on their official Poki pages in a new tab. Availability and controls may vary by device and region.</div>
+</section>
+<script>
+function filterWorldGames(){
+  const q=(document.getElementById('world-search').value||'').toLowerCase();
+  const active=document.querySelector('.world-filter.active');
+  const cat=active?.dataset.category||'all';
+  let shown=0;
+  document.querySelectorAll('.world-card').forEach(card=>{
+    const matchesCat=cat==='all'||(card.dataset.category||'').split(' ').includes(cat);
+    const matchesText=card.textContent.toLowerCase().includes(q);
+    card.hidden=!(matchesCat&&matchesText);
+    if(!card.hidden)shown++;
+  });
+  document.getElementById('world-count').textContent=shown+' games shown';
+}
+function setWorldFilter(category,button){
+  document.querySelectorAll('.world-filter').forEach(b=>b.classList.remove('active'));
+  button.classList.add('active');
+  button.dataset.category=category;
+  filterWorldGames();
+}
+document.querySelectorAll('.world-filter').forEach(b=>{
+  const label=b.textContent;
+  b.dataset.category=label.includes('Cars')?'car':label.includes('World')?'world':label.includes('Character')?'character':label.includes('Skill')?'skill':'all';
+});
 </div></section>
 <script>
 /* ==================== 1. TAB SWITCHER ==================== */
